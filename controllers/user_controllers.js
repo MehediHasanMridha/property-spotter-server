@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const userCollection = require("../models/users");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middlewares/auth");
 const multer = require("multer");
 const path = require("path");
 const UPLOAD_FOLDER = "./public/image";
+var nodemailer = require("nodemailer");
+const { ObjectId } = require("mongodb");
 
 //----------------------- Multer -----------------//
 const storage = multer.diskStorage({
@@ -69,6 +71,7 @@ router.get("/singleuser/:email", async (req, res) => {
 // Manual Signup
 router.post("/signup", upload.single("images"), async (req, res) => {
   const { name, email, role, password } = req.body;
+  console.log("🚀 ~ router.post ~ req.body:", req.body)
   const filenames = req.file.filename;
   const query = { email: email };
 
@@ -257,8 +260,8 @@ router.post("/forgot-password/:email", async (req, res) => {
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "",
-        pass: "",
+        user: "akram.iiuc.ctg@gmail.com",
+        pass: "cxpc pneg ktno bmvb",
       },
     });
 
