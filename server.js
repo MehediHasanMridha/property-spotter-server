@@ -6,6 +6,7 @@ const port = process.env.PORT || 5000;
 const userController = require("./controllers/user_controllers");
 const houseRouter = require('./router/router');
 const spotterRegistration = require('./router/router');
+const manageAreaRoute = require('./router/router');
 
 // Middleware
 app.use(cors());
@@ -17,6 +18,7 @@ require("dotenv").config();
 app.use("/", userController);
 app.use("/house", houseRouter);
 app.use("/spotter", spotterRegistration);
+app.use("/area", manageAreaRoute);
 
 const connectDB = async () => {
   try {

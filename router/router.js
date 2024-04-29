@@ -1,6 +1,7 @@
 const expres = require('express');
 const { houseAdd } = require('../controllers/houseControllers');
 const { registration } = require('../controllers/spotter-controler');
+const { addAreas, upload } = require('../controllers/areasControllers');
 const router = expres.Router();
 
 // Importing houseAdd function from controller
@@ -25,5 +26,9 @@ router.post('/registration', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+// ---------area router-----------
+router.post('/add-area', upload.single('image'), addAreas);
+
 
 module.exports = router;
