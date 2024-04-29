@@ -153,6 +153,74 @@ router.post("/signup/google", async (req, res) => {
 
   res.send({ token, user });
 });
+// Manual spotter Signup
+router.post("/signup/spotter", upload.single("images"), async (req, res) => {
+  const { name, email, role, password } = req.body;
+  console.log("🚀 ~ router.post ~ req.body:", req.body)
+  const filenames = req.file.filename;
+  const query = { email: email };
+
+  if (!name || !email || !password) {
+    throw new Error("All fields are required");
+  }
+
+  const existingUserByEmail = await userCollection.findOne(query);
+
+  if (existingUserByEmail) {
+    return res.status(400).json({
+      error:
+        "An account with this email already exists. Please use a different email.",
+    });
+  }
+
+  // Hash password and create new user object
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const path = "http://localhost:5000/image/";
+  const userData = {
+    name: name,
+    email: email,
+    role: role,
+    photoURL: path + filenames,
+    password: hashedPassword,
+  };
+
+  const insertedData = await userCollection.insertOne(userData);
+  res.status(200).json({ message: "User created successfully", insertedData });
+});
+// Manual houseowner Signup
+router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
+  const { name, email, role, password } = req.body;
+  console.log("🚀 ~ router.post ~ req.body:", req.body)
+  const filenames = req.file.filename;
+  const query = { email: email };
+
+  if (!name || !email || !password) {
+    throw new Error("All fields are required");
+  }
+
+  const existingUserByEmail = await userCollection.findOne(query);
+
+  if (existingUserByEmail) {
+    return res.status(400).json({
+      error:
+        "An account with this email already exists. Please use a different email.",
+    });
+  }
+
+  // Hash password and create new user object
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const path = "http://localhost:5000/image/";
+  const userData = {
+    name: name,
+    email: email,
+    role: role,
+    photoURL: path + filenames,
+    password: hashedPassword,
+  };
+
+  const insertedData = await userCollection.insertOne(userData);
+  res.status(200).json({ message: "User created successfully", insertedData });
+});
 //---------------------------------------------//
 
 //----------------------- PUT -----------------//
