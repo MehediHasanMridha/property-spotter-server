@@ -2,7 +2,9 @@ const express = require('express');
 const Area = require("../models/area");
 const multer = require("multer");
 const path = require("path");
-const UPLOAD_FOLDER = "./public/image/areas";
+const agent = require('../models/agent');
+const Agent = require('../models/agent');
+const UPLOAD_FOLDER = "./public/image/agent";
 
 //----------------------- Multer -----------------//
 const storage = multer.diskStorage({
@@ -28,19 +30,19 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const addAreas = async (req, res, next) => {
+const addAgent = async (req, res, next) => {
     try {
         console.log('hit this route bro');
         const { name, city, country } = req.body;
         console.log(name, city, country);
-        const newArea = new Area({
+        const newAgent = new Agent({
             name,
             city,
             country,
             image: req.file.filename,
         });
-        const savedArea = await newArea.save();
-        res.status(201).json(savedArea);
+        const agent = await newAgent.save();
+        res.status(201).json(agent);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -48,4 +50,4 @@ const addAreas = async (req, res, next) => {
 }
 
 
-module.exports = { addAreas, upload }
+module.exports = { addAgent, upload }
