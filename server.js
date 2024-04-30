@@ -7,6 +7,8 @@ const userController = require("./controllers/user_controllers");
 const houseRouter = require('./router/router');
 const spotterRegistration = require('./router/router');
 const manageAreaRoute = require('./router/router');
+const manageAgentRoute = require('./router/router');
+const manageAgencyRoute = require('./router/router');
 
 // Middleware
 app.use(cors());
@@ -19,6 +21,8 @@ app.use("/", userController);
 app.use("/house", houseRouter);
 app.use("/spotter", spotterRegistration);
 app.use("/area", manageAreaRoute);
+app.use("/agency", manageAgencyRoute);
+app.use("/agent", manageAgentRoute);
 
 const connectDB = async () => {
   try {

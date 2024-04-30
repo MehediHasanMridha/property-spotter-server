@@ -39,7 +39,6 @@ const addAreas = async (req, res, next) => {
             country,
             image: req.file.filename,
         });
-
         const savedArea = await newArea.save();
         res.status(201).json(savedArea);
     } catch (error) {

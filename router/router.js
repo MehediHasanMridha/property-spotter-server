@@ -2,6 +2,8 @@ const expres = require('express');
 const { houseAdd } = require('../controllers/houseControllers');
 const { registration } = require('../controllers/spotter-controler');
 const { addAreas, upload } = require('../controllers/areasControllers');
+const { addAgency } = require('../controllers/agencyController');
+const { addAgent } = require('../controllers/agentControllers');
 const router = expres.Router();
 
 // Importing houseAdd function from controller
@@ -29,6 +31,8 @@ router.post('/registration', async (req, res) => {
 
 // ---------area router-----------
 router.post('/add-area', upload.single('image'), addAreas);
+router.post('/add-agency', upload.single('image'), addAgency);
+router.post('/add-agent', upload.single('image'), addAgent);
 
 
 module.exports = router;
