@@ -47,6 +47,30 @@ const addAgency = async (req, res, next) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+const getAgency =async(req, res, next)=>{
+    try {
+        const areas = await Agency.find();
+        res.json(areas);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
+const deleteAgency= async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        // console.log(id);
 
-module.exports = { addAgency, upload }
+        const deletedArea = await Agency.findByIdAndDelete(id);
+        if (!deletedArea) {
+            return res.status(404).json({ error: 'Agency not found' });
+        }
+        res.json({ message: 'Agency deleted successfully' });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+module.exports = { addAgency,getAgency,deleteAgency, upload }

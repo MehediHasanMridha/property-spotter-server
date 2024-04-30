@@ -49,5 +49,30 @@ const addAgent = async (req, res, next) => {
     }
 }
 
+const getAgent =async(req, res, next)=>{
+    try {
+        const areas = await Agent.find();
+        res.json(areas);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
-module.exports = { addAgent, upload }
+const deleteAgent= async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        console.log(id);
+
+        const deletedAgent = await Agent.findByIdAndDelete(id);
+        if (!deletedAgent) {
+            return res.status(404).json({ error: 'Agent not found' });
+        }
+        res.json({ message: 'Agent deleted successfully' });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+module.exports = { addAgent,getAgent, deleteAgent, upload }

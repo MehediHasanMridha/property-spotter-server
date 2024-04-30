@@ -47,5 +47,31 @@ const addAreas = async (req, res, next) => {
     }
 }
 
+const getAreas =async(req, res, next)=>{
+    try {
+        const areas = await Area.find();
+        res.json(areas);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
-module.exports = { addAreas, upload }
+const deleteArea = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        // console.log(id);
+
+        const deletedArea = await Area.findByIdAndDelete(id);
+        if (!deletedArea) {
+            return res.status(404).json({ error: 'Area not found' });
+        }
+        res.json({ message: 'Area deleted successfully' });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+module.exports = { addAreas, getAreas, deleteArea, upload }
