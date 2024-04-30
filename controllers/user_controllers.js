@@ -66,12 +66,11 @@ router.get("/singleuser/:email", async (req, res) => {
 });
 //---------------------------------------------//
 
-
 //----------------------- POST -----------------//
 // Manual Signup
 router.post("/signup", upload.single("images"), async (req, res) => {
   const { name, email, role, password } = req.body;
-  console.log("🚀 ~ router.post ~ req.body:", req.body)
+  console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
 
@@ -97,6 +96,9 @@ router.post("/signup", upload.single("images"), async (req, res) => {
     role: role,
     photoURL: path + filenames,
     password: hashedPassword,
+    about: "",
+    studies: "",
+    location: "",
   };
 
   const insertedData = await userCollection.insertOne(userData);
@@ -141,6 +143,9 @@ router.post("/signup/google", async (req, res) => {
       role: role,
       photoURL: photoURL,
       password: "",
+      about: "",
+      studies: "",
+      location: "",
     };
 
     const insertedData = await userCollection.insertOne(userData);
@@ -156,7 +161,7 @@ router.post("/signup/google", async (req, res) => {
 // Manual spotter Signup
 router.post("/signup/spotter", upload.single("images"), async (req, res) => {
   const { name, email, role, password } = req.body;
-  console.log("🚀 ~ router.post ~ req.body:", req.body)
+  console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
 
@@ -190,7 +195,7 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
 // Manual houseowner Signup
 router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
   const { name, email, role, password } = req.body;
-  console.log("🚀 ~ router.post ~ req.body:", req.body)
+  console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
 
@@ -228,12 +233,19 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
 router.put("/update/:email", upload.single("images"), async (req, res) => {
   try {
     const email = req.params.email;
-    const { name, password, about, role, oldPass } = req.body;
-    console.log("🚀 ~ router.put ~ oldPass:", oldPass);
+    const {
+      name,
+      password,
+      about,
+      role,
+      studies,
+      location,
+      oldPass,
+      isUpdate,
+    } = req.body;
+    // console.log("🚀 ~ app.put ~ oldPass:", req.body);
     const filename = req.file ? req.file.filename : undefined;
     const newPassword = password ? password : undefined;
-
-    let userToUpdate = {};
 
     // Retrieve existing user data
     const existingUser = await userCollection.findOne({ email });
@@ -241,28 +253,27 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
     const paths = "http://localhost:5000/image/";
-    // Update fields provided in the request body
-    if (name) userToUpdate.name = name;
-    if (filename) userToUpdate.photoURL = paths + filename;
-
-    if (newPassword) {
+    const userToUpdate = {
+      name,
+      about,
+      studies,
+      location,
+    };
+    if (isUpdate == "False") {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       userToUpdate.password = hashedPassword;
-    } else {
+    } else if (isUpdate == "True") {
       userToUpdate.password = oldPass;
     }
+    // Update fields provided in the request body
+    if (filename) userToUpdate.photoURL = paths + filename;
 
-    console.log("testing", userToUpdate);
+    // console.log("testing", userToUpdate);
     // Update user data in the database
     const result = await userCollection.updateOne(
       { email },
       { $set: userToUpdate }
     );
-
-    // Check if the role is ""
-    // Role wise update if any
-    if (role === "") {
-    }
 
     const user = await userCollection.findOne({ email });
 
