@@ -31,10 +31,9 @@ const upload = multer({ storage: storage });
 const addAreas = async (req, res, next) => {
     try {
         console.log('hit this route bro');
-        const { name, city, country } = req.body;
-        console.log(name, city, country);
+        const { city, country } = req.body;
+        console.log( city, country);
         const newArea = new Area({
-            name,
             city,
             country,
             image: req.file.filename,
