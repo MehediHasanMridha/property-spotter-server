@@ -2,8 +2,8 @@ const expres = require('express');
 const { houseAdd } = require('../controllers/houseControllers');
 const { registration } = require('../controllers/spotter-controler');
 const { addAreas, upload, getAreas,deleteArea } = require('../controllers/areasControllers');
-const { addAgency,getAgency,deleteAgency } = require('../controllers/agencyController');
-const { addAgent,getAgent, deleteAgent } = require('../controllers/agentControllers');
+const { addAgency,getAgency,deleteAgency,updateAgencyData } = require('../controllers/agencyController');
+const { addAgent,getAgent, deleteAgent, updateAgent } = require('../controllers/agentControllers');
 const router = expres.Router();
 
 // Importing houseAdd function from controller
@@ -39,4 +39,6 @@ router.get('/agentData', getAgent);
 router.delete('/delete/:id', deleteArea);
 router.delete('/deleteAgency/:id', deleteAgency);
 router.delete('/deleted/:id', deleteAgent);
+router.patch('/update/:id', updateAgent)
+router.patch('/:id', updateAgencyData)
 module.exports = router;
