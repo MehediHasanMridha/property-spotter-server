@@ -33,13 +33,13 @@ const upload = multer({ storage: storage });
 const addAgent = async (req, res, next) => {
     try {
         console.log('hit this route bro');
-        const { name, city, country } = req.body;
-        console.log(name, city, country);
+        const { name, email, password,agency } = req.body;
+        console.log(name, email, password,agency );
         const newAgent = new Agent({
-            name,
-            city,
-            country,
-            image: req.file.filename,
+            name, 
+            email, 
+            password,
+            agency 
         });
         const agent = await newAgent.save();
         res.status(201).json(agent);
@@ -59,6 +59,32 @@ const getAgent =async(req, res, next)=>{
     }
 }
 
+
+const updateAgent = async(req, res, next)=>{
+    try {
+        const { id } = req.params;
+        const { name, email, password, agency } = req.body;
+        const updateAgent = {};
+        if (name) updateAgent.name = name;
+        if (email) updateAgent.email = email;
+        if (password) updateAgent.password = password;
+        if (agency) updateAgent.agency = agency;
+
+   
+        const updatedAgent = await Agent.findByIdAndUpdate(id, updateAgent, { new: true });
+
+        if (!updatedAgent) {
+            return res.status(404).json({ error: 'Agent not found' });
+        }
+        res.json(updatedAgent);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+
 const deleteAgent= async (req, res, next) => {
     try {
         const {id} = req.params;
@@ -75,4 +101,4 @@ const deleteAgent= async (req, res, next) => {
     }
 }
 
-module.exports = { addAgent,getAgent, deleteAgent, upload }
+module.exports = { addAgent,getAgent, deleteAgent,updateAgent, upload }

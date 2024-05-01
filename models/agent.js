@@ -6,16 +6,17 @@ const agentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    city: {
+    email: {
         type: String,
         required: true
     },
-    country: {
+    password: {
         type: String,
         required: true
     },
-    image: {
-        type: String
+    agency: {
+        type: String,
+        required: true
     }
 });
 

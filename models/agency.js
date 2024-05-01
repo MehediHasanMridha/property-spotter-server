@@ -2,15 +2,15 @@
 const mongoose = require('mongoose');
 
 const agencySchema = new mongoose.Schema({
-    name: {
+    agencyName: {
         type: String,
         required: true
     },
-    city: {
+    ownerEmail: {
         type: String,
         required: true
     },
-    country: {
+    password: {
         type: String,
         required: true
     },
