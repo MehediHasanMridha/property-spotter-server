@@ -6,6 +6,14 @@ const houseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    spooterEmail: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        required: true
+    },
     bedroom: {
         type: String,
         required: true
