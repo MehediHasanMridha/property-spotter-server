@@ -3,7 +3,7 @@ const { houseAdd, getHouse } = require('../controllers/houseControllers');
 const { registration } = require('../controllers/spotter-controler');
 const { addAreas, upload, getAreas,deleteArea } = require('../controllers/areasControllers');
 const { addAgency,getAgency,deleteAgency,updateAgencyData } = require('../controllers/agencyController');
-const { addAgent,getAgent, deleteAgent, updateAgent } = require('../controllers/agentControllers');
+const { addAgent, getAgent, deleteAgent, updateAgent } = require('../controllers/agentControllers');
 const router = expres.Router();
 
 // Importing houseAdd function from controller

@@ -6,6 +6,7 @@ const port = process.env.PORT || 5000;
 const userController = require("./controllers/user_controllers");
 const houseRouter = require('./router/router');
 const spotterRegistration = require('./router/router');
+const { router } = require('./controllers/spotter-controler');
 const manageAreaRoute = require('./router/router');
 const manageAgentRoute = require('./router/router');
 const manageAgencyRoute = require('./router/router');
@@ -23,6 +24,7 @@ app.use("/spotter", spotterRegistration);
 app.use("/area", manageAreaRoute);
 app.use("/agency", manageAgencyRoute);
 app.use("/agent", manageAgentRoute);
+app.use(router);
 
 const connectDB = async () => {
   try {
