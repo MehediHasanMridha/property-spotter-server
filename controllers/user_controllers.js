@@ -54,6 +54,23 @@ router.get("/allusers", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
+router.get("/allusers/filterby/spooter", async (req, res) => {
+  try {
+    const users = await userCollection.find({ role: "spooter" }).toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+router.get("/allusers/filterby/agent", async (req, res) => {
+  try {
+    const users = await userCollection.find({ role: "agent" }).toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
 // Single User Data Get
 router.get("/singleuser/:email", async (req, res) => {
   try {
@@ -187,6 +204,9 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     role: role,
     photoURL: path + filenames,
     password: hashedPassword,
+    about: "",
+    studies: "",
+    location: "",
   };
 
   const insertedData = await userCollection.insertOne(userData);
@@ -339,13 +359,13 @@ router.post("/forgot-password/:email", async (req, res) => {
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "akram.iiuc.ctg@gmail.com",
-        pass: "cxpc pneg ktno bmvb",
+        user: "algobot701@gmail.com",
+        pass: "fvpj cgjn kbim mvgy",
       },
     });
 
     var mailOptions = {
-      from: "akram.iiuc.ctg@gmail.com",
+      from: "algobot701@gmail.com",
       to: user.email,
       subject: "Reset Password Link",
       text: `http://localhost:5173/reset_password/${user._id}/${token}`,
