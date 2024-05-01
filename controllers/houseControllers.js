@@ -21,4 +21,8 @@ const houseAdd = async (houseData) => {
     }
 }
 
+
+
+
+
 module.exports = { houseAdd }
