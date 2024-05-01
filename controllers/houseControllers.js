@@ -27,4 +27,4 @@ const getHouse = async(req,res) =>{
     const result = await House.find();
     res.send(result)
 }
-module.exports = { houseAdd,getHouse }
+module.exports = { houseAdd, getHouse }
