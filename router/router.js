@@ -1,5 +1,5 @@
 const expres = require('express');
-const { houseAdd } = require('../controllers/houseControllers');
+const { houseAdd, getHouse } = require('../controllers/houseControllers');
 const { registration } = require('../controllers/spotter-controler');
 const { addAreas, upload, getAreas,deleteArea } = require('../controllers/areasControllers');
 const { addAgency,getAgency,deleteAgency,updateAgencyData } = require('../controllers/agencyController');
@@ -41,4 +41,5 @@ router.delete('/deleteAgency/:id', deleteAgency);
 router.delete('/deleted/:id', deleteAgent);
 router.patch('/update/:id', updateAgent)
 router.patch('/:id', updateAgencyData)
+router.get('/houseData',getHouse)
 module.exports = router;

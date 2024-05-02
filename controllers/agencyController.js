@@ -57,8 +57,6 @@ const getAgency =async(req, res, next)=>{
     }
 }
 
-
-
 const updateAgencyData = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -83,9 +81,6 @@ const updateAgencyData = async (req, res, next) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
-
-
-
 const deleteAgency= async (req, res, next) => {
     try {
         const {id} = req.params;

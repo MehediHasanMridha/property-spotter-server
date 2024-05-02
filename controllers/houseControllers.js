@@ -2,9 +2,11 @@ const House = require("../models/house");
 
 const houseAdd = async (houseData) => {
     try {
-        const { spooterName, bedroom, bathroom, sellTime, houseOwnerName, houseOwnerEmail, houseOwnerPhone, agency } = houseData;
+        const { spooterName,spooterEmail,status, bedroom, bathroom, sellTime, houseOwnerName, houseOwnerEmail, houseOwnerPhone, agency } = houseData;
         const newHouse = new House({
             spooterName,
+            spooterEmail,
+            status,
             bedroom,
             bathroom,
             sellTime,
@@ -21,8 +23,8 @@ const houseAdd = async (houseData) => {
     }
 }
 
-
-
-
-
-module.exports = { houseAdd }
+const getHouse = async(req,res) =>{
+    const result = await House.find();
+    res.send(result)
+}
+module.exports = { houseAdd,getHouse }

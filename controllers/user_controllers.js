@@ -54,6 +54,23 @@ router.get("/allusers", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
+router.get("/allusers/filterby/spooter", async (req, res) => {
+  try {
+    const users = await userCollection.find({ role: "spooter" }).toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+router.get("/allusers/filterby/agent", async (req, res) => {
+  try {
+    const users = await userCollection.find({ role: "agent" }).toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
 // Single User Data Get
 router.get("/singleuser/:email", async (req, res) => {
   try {
@@ -130,6 +147,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
+
 // Google Signup + Login
 router.post("/signup/google", async (req, res) => {
   const { name, email, role, photoURL } = req.body;
@@ -187,11 +205,15 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     role: role,
     photoURL: path + filenames,
     password: hashedPassword,
+    about: "",
+    studies: "",
+    location: "",
   };
 
   const insertedData = await userCollection.insertOne(userData);
   res.status(200).json({ message: "User created successfully", insertedData });
 });
+
 // Manual houseowner Signup
 router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
   const { name, email, role, password } = req.body;
@@ -227,6 +249,65 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
   res.status(200).json({ message: "User created successfully", insertedData });
 });
 //---------------------------------------------//
+
+
+
+// Admin added Agency
+router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
+  try {
+    console.log('hit this route bro');
+    const { agencyName, email, password } = req.body;
+    console.log(agencyName, email, password);
+
+    const existingAgency = await userCollection.findOne({ email: email });
+    if (existingAgency) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    const paths = "http://localhost:5000/image/";
+    const newAgency = {
+      agencyName,
+      email,
+      password,
+      role: "agency",
+      image: paths + req.file.filename,
+    };
+    const agency = await userCollection.insertOne(newAgency);
+    res.status(201).json(agency);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//admin added agent
+router.post("/agent", async (req, res) => {
+  try {
+    const { name, email, password, agencyName } = req.body;
+    console.log(name, email, password, agencyName);
+
+    const existingAgent = await userCollection.findOne({ email: email });
+    console.log("emmail",existingAgent);
+    if (existingAgent) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    const newAgent = {
+      name,
+      email,
+      password,
+      agencyName,
+      role: "agent"
+    };
+    const agent = await userCollection.insertOne(newAgent);
+    res.status(201).json(agent);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 //----------------------- PUT -----------------//
 // Update Profile
@@ -339,13 +420,13 @@ router.post("/forgot-password/:email", async (req, res) => {
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "akram.iiuc.ctg@gmail.com",
-        pass: "cxpc pneg ktno bmvb",
+        user: "algobot701@gmail.com",
+        pass: "fvpj cgjn kbim mvgy",
       },
     });
 
     var mailOptions = {
-      from: "akram.iiuc.ctg@gmail.com",
+      from: "algobot701@gmail.com",
       to: user.email,
       subject: "Reset Password Link",
       text: `http://localhost:5173/reset_password/${user._id}/${token}`,
