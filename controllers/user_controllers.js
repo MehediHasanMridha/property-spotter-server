@@ -54,6 +54,7 @@ router.get("/allusers", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
+
 router.get("/allusers/filterby/spooter", async (req, res) => {
   try {
     const users = await userCollection.find({ role: "spooter" }).toArray();
@@ -62,9 +63,11 @@ router.get("/allusers/filterby/spooter", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
-router.get("/allusers/filterby/agent", async (req, res) => {
+
+router.get("/allusers/filterby/agent/:name", async (req, res) => {
   try {
-    const users = await userCollection.find({ role: "agent" }).toArray();
+    const name = req.params.name
+    const users = await userCollection.find({ agencyName: name}).toArray();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
