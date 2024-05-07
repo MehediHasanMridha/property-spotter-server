@@ -114,7 +114,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
     name: name,
     email: email,
     role: role,
-    photoURL: path + filenames,
+    image: path + filenames,
     password: hashedPassword,
     about: "",
     studies: "",
@@ -150,6 +150,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
+
 // Google Signup + Login
 router.post("/signup/google", async (req, res) => {
   const { name, email, role, photoURL } = req.body;
@@ -161,7 +162,7 @@ router.post("/signup/google", async (req, res) => {
       name: name,
       email: email,
       role: role,
-      photoURL: photoURL,
+      image: photoURL,
       password: "",
       about: "",
       studies: "",
@@ -215,6 +216,7 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
   const insertedData = await userCollection.insertOne(userData);
   res.status(200).json({ message: "User created successfully", insertedData });
 });
+
 // Manual houseowner Signup
 router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
   const { name, email, role, password } = req.body;
@@ -242,7 +244,7 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
     name: name,
     email: email,
     role: role,
-    photoURL: path + filenames,
+    image: path + filenames,
     password: hashedPassword,
   };
 
@@ -250,6 +252,65 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
   res.status(200).json({ message: "User created successfully", insertedData });
 });
 //---------------------------------------------//
+
+
+
+// Admin added Agency
+router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
+  try {
+    console.log('hit this route bro');
+    const { agencyName, email, password } = req.body;
+    console.log(agencyName, email, password);
+
+    const existingAgency = await userCollection.findOne({ email: email });
+    if (existingAgency) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const paths = "http://localhost:5000/image/";
+    const newAgency = {
+      agencyName,
+      email,
+      password:hashedPassword,
+      role: "agency",
+      image: paths + req.file.filename,
+    };
+    const agency = await userCollection.insertOne(newAgency);
+    res.status(201).json(agency);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//admin added agent
+router.post("/agent", async (req, res) => {
+  try {
+    const { name, email, password, agencyName } = req.body;
+    console.log(name, email, password, agencyName);
+
+    const existingAgent = await userCollection.findOne({ email: email });
+    console.log("emmail",existingAgent);
+    if (existingAgent) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newAgent = {
+      name,
+      email,
+      password:hashedPassword,
+      agencyName,
+      role: "agent"
+    };
+    const agent = await userCollection.insertOne(newAgent);
+    res.status(201).json(agent);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 //----------------------- PUT -----------------//
 // Update Profile
