@@ -4,14 +4,29 @@ const { registration } = require('../controllers/spotter-controler');
 const { addAreas, upload, getAreas,deleteArea } = require('../controllers/areasControllers');
 const { addAgency,getAgency,deleteAgency,updateAgencyData } = require('../controllers/agencyController');
 const { addAgent, getAgent, deleteAgent, updateAgent } = require('../controllers/agentControllers');
+const House = require('../models/house');
 const router = expres.Router();
 
 // Importing houseAdd function from controller
-router.post('/add', async (req, res) => {
+router.post('/add', upload.single('image'), async (req, res) => {
     try {
-        const savedHouse = await houseAdd(req.body);
+        const image = req.file.filename
+        const savedHouse = await houseAdd(req.body,image);
         console.log(savedHouse);
         res.status(201).json(savedHouse);
+    } catch (error) {
+        console.error('Error adding house:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/update/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+        const upData = req.body
+        console.log(id);
+        const res = await House.findByIdAndUpdate(id, upData)
+        res.status(201).json(id);
     } catch (error) {
         console.error('Error adding house:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
