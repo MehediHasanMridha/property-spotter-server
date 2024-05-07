@@ -8,9 +8,10 @@ const House = require('../models/house');
 const router = expres.Router();
 
 // Importing houseAdd function from controller
-router.post('/add', async (req, res) => {
+router.post('/add', upload.single('image'), async (req, res) => {
     try {
-        const savedHouse = await houseAdd(req.body);
+        const image = req.file.filename
+        const savedHouse = await houseAdd(req.body,image);
         console.log(savedHouse);
         res.status(201).json(savedHouse);
     } catch (error) {
