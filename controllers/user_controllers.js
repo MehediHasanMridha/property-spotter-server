@@ -114,7 +114,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
     name: name,
     email: email,
     role: role,
-    photoURL: path + filenames,
+    image: path + filenames,
     password: hashedPassword,
     about: "",
     studies: "",
@@ -162,7 +162,7 @@ router.post("/signup/google", async (req, res) => {
       name: name,
       email: email,
       role: role,
-      photoURL: photoURL,
+      image: photoURL,
       password: "",
       about: "",
       studies: "",
@@ -244,7 +244,7 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
     name: name,
     email: email,
     role: role,
-    photoURL: path + filenames,
+    image: path + filenames,
     password: hashedPassword,
   };
 
@@ -266,12 +266,12 @@ router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
     if (existingAgency) {
       return res.status(400).json({ error: 'Email already exists' });
     }
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const paths = "http://localhost:5000/image/";
     const newAgency = {
       agencyName,
       email,
-      password,
+      password:hashedPassword,
       role: "agency",
       image: paths + req.file.filename,
     };
@@ -294,11 +294,11 @@ router.post("/agent", async (req, res) => {
     if (existingAgent) {
       return res.status(400).json({ error: 'Email already exists' });
     }
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newAgent = {
       name,
       email,
-      password,
+      password:hashedPassword,
       agencyName,
       role: "agent"
     };
