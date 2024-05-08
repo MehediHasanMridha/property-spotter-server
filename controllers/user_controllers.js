@@ -64,10 +64,10 @@ router.get("/allusers/filterby/spooter", async (req, res) => {
   }
 });
 
-router.get("/allusers/filterby/agent/:name", async (req, res) => {
+router.get("/allusers/filterby/agent/:email", async (req, res) => {
   try {
-    const name = req.params.name;
-    const users = await userCollection.find({ agencyName: name }).toArray();
+    const email = req.params.email;
+    const users = await userCollection.find({ agencyBy: email }).toArray();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
@@ -89,7 +89,7 @@ router.get("/singleuser/:email", async (req, res) => {
 //----------------------- POST -----------------//
 // Manual Signup
 router.post("/signup", upload.single("images"), async (req, res) => {
-  const { name, email, role, password } = req.body;
+  const { name, email, role, password, agencyBy } = req.body;
   console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
@@ -118,6 +118,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
     password: hashedPassword,
     about: "",
     location: "",
+    agencyBy: agencyBy || "",
   };
 
   const insertedData = await userCollection.insertOne(userData);

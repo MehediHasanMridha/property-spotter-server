@@ -28,9 +28,9 @@ router.post('/update/:id', async (req, res) => {
         const upData = req.body
         console.log(id);
         const res = await House.findByIdAndUpdate(id, upData)
+        console.log(res);
         res.status(201).json(id);
     } catch (error) {
-        console.error('Error adding house:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
