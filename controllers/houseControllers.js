@@ -14,6 +14,7 @@ const houseAdd = async (houseData, image) => {
             houseOwnerEmail,
             houseOwnerPhone,
             agency,
+            propertyType
         } = houseData;
         const newHouse = new House({
             spooterName,
@@ -21,13 +22,14 @@ const houseAdd = async (houseData, image) => {
             status,
             bedroom,
             address,
-            image: image,
             bathroom,
             sellTime,
+            image,
             houseOwnerName,
             houseOwnerEmail,
             houseOwnerPhone,
             agency,
+            propertyType
         });
         const savedHouse = await newHouse.save();
         return savedHouse;
