@@ -7,16 +7,18 @@ const { addAgent, getAgent, deleteAgent, updateAgent } = require('../controllers
 const House = require('../models/house');
 const router = expres.Router();
 
-// Importing houseAdd function from controller
 router.post('/add', upload.single('image'), async (req, res) => {
     try {
-        const image = req.file.filename
-        const savedHouse = await houseAdd(req.body,image);
+        if (!req.file) {
+            throw new Error("No file uploaded");
+        }
+        const image = req.file.filename;
+        const savedHouse = await houseAdd(req.body, image);
         console.log(savedHouse);
         res.status(201).json(savedHouse);
     } catch (error) {
         console.error('Error adding house:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: error.message });
     }
 });
 

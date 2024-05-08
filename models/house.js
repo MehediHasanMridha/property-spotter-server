@@ -10,6 +10,10 @@ const houseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    propertyType:{
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         required: true
@@ -24,7 +28,7 @@ const houseSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true
+       
     },
     bathroom: {
         type: String,
