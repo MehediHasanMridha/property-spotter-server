@@ -46,11 +46,11 @@ router.post("/edit-spotter/:id", async (req, res) => {
     }
 });
 
-router.get("/all-list/:spooterName", async (req, res) => {
+router.get("/all-list/:email", async (req, res) => {
     try {
-        const spooterName = req.params.spooterName
+        const email = req.params.email
         
-        const result = await House.find({spooterName: spooterName});
+        const result = await House.find({spooterEmail: email});
         res.send(result);
     } catch (error) {
         console.error("Error adding house:", error.message);

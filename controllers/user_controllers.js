@@ -54,6 +54,14 @@ router.get("/allusers", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
+router.get("/spotters", async (req, res) => {
+  try {
+    const user = await userCollection.find({role: "spotter"}).toArray();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
 
 router.get("/allusers/filterby/spooter", async (req, res) => {
   try {
