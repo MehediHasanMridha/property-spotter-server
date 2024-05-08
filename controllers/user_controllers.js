@@ -66,8 +66,8 @@ router.get("/allusers/filterby/spooter", async (req, res) => {
 
 router.get("/allusers/filterby/agent/:name", async (req, res) => {
   try {
-    const name = req.params.name
-    const users = await userCollection.find({ agencyName: name}).toArray();
+    const name = req.params.name;
+    const users = await userCollection.find({ agencyName: name }).toArray();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
@@ -114,10 +114,9 @@ router.post("/signup", upload.single("images"), async (req, res) => {
     name: name,
     email: email,
     role: role,
-    image: path + filenames,
+    photoURL: path + filenames,
     password: hashedPassword,
     about: "",
-    studies: "",
     location: "",
   };
 
@@ -162,10 +161,9 @@ router.post("/signup/google", async (req, res) => {
       name: name,
       email: email,
       role: role,
-      image: photoURL,
+      photoURL: photoURL,
       password: "",
       about: "",
-      studies: "",
       location: "",
     };
 
@@ -209,7 +207,6 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     photoURL: path + filenames,
     password: hashedPassword,
     about: "",
-    studies: "",
     location: "",
   };
 
@@ -244,7 +241,7 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
     name: name,
     email: email,
     role: role,
-    image: path + filenames,
+    photoURL: path + filenames,
     password: hashedPassword,
   };
 
@@ -253,33 +250,34 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
 });
 //---------------------------------------------//
 
-
-
 // Admin added Agency
 router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
   try {
-    console.log('hit this route bro');
-    const { agencyName, email, password } = req.body;
+    console.log("hit this route bro");
+    const { name, agencyName, email, password } = req.body;
     console.log(agencyName, email, password);
 
     const existingAgency = await userCollection.findOne({ email: email });
     if (existingAgency) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: "Email already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const paths = "http://localhost:5000/image/";
     const newAgency = {
-      agencyName,
+      name,
       email,
-      password:hashedPassword,
+      agencyName,
+      password: hashedPassword,
       role: "agency",
-      image: paths + req.file.filename,
+      photoURL: paths + req.file.filename,
+      about: "",
+      location: "",
     };
     const agency = await userCollection.insertOne(newAgency);
     res.status(201).json(agency);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -290,43 +288,33 @@ router.post("/agent", async (req, res) => {
     console.log(name, email, password, agencyName);
 
     const existingAgent = await userCollection.findOne({ email: email });
-    console.log("emmail",existingAgent);
+    console.log("emmail", existingAgent);
     if (existingAgent) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: "Email already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newAgent = {
       name,
       email,
-      password:hashedPassword,
+      password: hashedPassword,
       agencyName,
-      role: "agent"
+      role: "agent",
     };
     const agent = await userCollection.insertOne(newAgent);
     res.status(201).json(agent);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 //----------------------- PUT -----------------//
 // Update Profile
 router.put("/update/:email", upload.single("images"), async (req, res) => {
   try {
     const email = req.params.email;
-    const {
-      name,
-      password,
-      about,
-      role,
-      studies,
-      location,
-      oldPass,
-      isUpdate,
-    } = req.body;
+    const { name, password, about, role, location, oldPass, isUpdate } =
+      req.body;
     // console.log("🚀 ~ app.put ~ oldPass:", req.body);
     const filename = req.file ? req.file.filename : undefined;
     const newPassword = password ? password : undefined;
@@ -340,10 +328,9 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
     const userToUpdate = {
       name,
       about,
-      studies,
       location,
     };
-    if (isUpdate == "False") {
+    if (isUpdate == "False" && newPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       userToUpdate.password = hashedPassword;
     } else if (isUpdate == "True") {
@@ -371,11 +358,84 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
+router.put(
+  "/admin/Update/:id",
+  upload.single("images"),
+  async (req, res) => {
+    try {
+      const { name, agencyName, email, password,oldPass, isUpdate } = req.body;
+      const id = req.params.id;
+      const filename = req.file ? req.file.filename : undefined;
+      const newPassword = password ? password : undefined;
+
+      const existingUser = await userCollection.findOne({
+        _id: new ObjectId(id),
+      });
+
+      if (!existingUser) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      const paths = "http://localhost:5000/image/";
+
+      const newAgency = {
+        name,
+        email,
+        agencyName,
+      };
+      if (isUpdate == "False" && newPassword) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        newAgency.password = hashedPassword;
+      } else if (isUpdate == "True") {
+        newAgency.password = oldPass;
+      }
+
+      if (filename) newAgency.photoURL = paths + filename;
+      console.log(newAgency);
+      const result = await userCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: newAgency }
+      );
+
+      res.status(201).json(result);
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
 //---------------------------------------------//
 
 //----------------------- DELETE -----------------//
 // Delete User
 router.delete("/user/delete/:email", async (req, res) => {
+  try {
+    const userEmail = req.params.email;
+    if (!userEmail) {
+      return res.status(400).json({ error: "Email parameter is missing." });
+    }
+
+    // Find the user by email to get their role
+    const user = await userCollection.findOne({ email: userEmail });
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Delete the user from the users collection
+    const query = { email: userEmail };
+    const result = await userCollection.deleteOne(query);
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.status(200).json({ message: "User deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+router.delete("/admin/delete/:email", async (req, res) => {
   try {
     const userEmail = req.params.email;
     if (!userEmail) {
