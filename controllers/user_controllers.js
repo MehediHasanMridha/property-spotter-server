@@ -159,7 +159,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
       return res.send({ Status: "Success" });
     }
   });
-  
+
   const insertedData = await userCollection.insertOne(userData);
   res.status(200).json({ message: "User created successfully", insertedData });
 });
@@ -226,7 +226,7 @@ router.post("/signup/google", async (req, res) => {
 });
 // Manual spotter Signup
 router.post("/signup/spotter", upload.single("images"), async (req, res) => {
-  const { name, email, role, password,termsAndcondition } = req.body;
+  const { name, email, role, password, termsAndcondition } = req.body;
   console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
@@ -339,6 +339,8 @@ router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
     if (existingAgency) {
       return res.status(400).json({ error: "Email already exists" });
     }
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const paths = "http://localhost:5000/image/areas/";
     const newAgency = {
@@ -346,11 +348,43 @@ router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
       email,
       agencyName,
       password: hashedPassword,
+      termsAndcondition: true,
+      verification: false,
+      otp,
       role: "agency",
       photoURL: paths + req.file.filename,
       about: "",
       location: "",
     };
+
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "algobot701@gmail.com",
+        pass: "jfth qddl nkgp yitb",
+      },
+    });
+  
+    var mailOptions = {
+      from: '"Fred Foo 👻"',
+      to: email,
+      subject: "Email Verification",
+      text: "Confirmation email",
+      html: `
+          <b>Hello ${name}. Please confirm your otp.</b>
+          <b>Your confirmation code is</b>
+          <h1>${otp}</h1>
+      `,
+    };
+  
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        return res.send({ Status: "Success" });
+      }
+    });
+
     const agency = await userCollection.insertOne(newAgency);
     res.status(201).json(agency);
   } catch (error) {
@@ -370,14 +404,52 @@ router.post("/agent", async (req, res) => {
     if (existingAgent) {
       return res.status(400).json({ error: "Email already exists" });
     }
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newAgent = {
       name,
       email,
       password: hashedPassword,
+      termsAndcondition: true,
+      verification: false,
+      otp,
       agencyName,
       role: "agent",
+      photoURL: "",
+      about: "",
+      location: "",
     };
+
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "algobot701@gmail.com",
+        pass: "jfth qddl nkgp yitb",
+      },
+    });
+  
+    var mailOptions = {
+      from: '"Fred Foo 👻"',
+      to: email,
+      subject: "Email Verification",
+      text: "Confirmation email",
+      html: `
+          <b>Hello ${name}. Please confirm your otp.</b>
+          <b>Your confirmation code is</b>
+          <h1>${otp}</h1>
+      `,
+    };
+  
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        return res.send({ Status: "Success" });
+      }
+    });
+
     const agent = await userCollection.insertOne(newAgent);
     res.status(201).json(agent);
   } catch (error) {
@@ -451,7 +523,7 @@ router.put("/admin/Update/:id", upload.single("images"), async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-      const paths = "http://localhost:5000/image/areas/";
+    const paths = "http://localhost:5000/image/areas/";
 
     const newAgency = {
       name,
