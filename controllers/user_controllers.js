@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const verifyToken = require("../middlewares/auth");
 const multer = require("multer");
 const path = require("path");
-const UPLOAD_FOLDER = "./public/image";
+const UPLOAD_FOLDER = "./public/image/areas";
 var nodemailer = require("nodemailer");
 const { ObjectId } = require("mongodb");
 
@@ -117,7 +117,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000);
   // Hash password and create new user object
   const hashedPassword = await bcrypt.hash(password, 10);
-  const path = "http://localhost:5000/image/";
+  const path = "http://localhost:5000/image/areas/";
   const userData = {
     name: name,
     email: email,
@@ -246,7 +246,7 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000);
   // Hash password and create new user object
   const hashedPassword = await bcrypt.hash(password, 10);
-  const path = "http://localhost:5000/image/";
+  const path = "http://localhost:5000/image/areas/";
   const userData = {
     name: name,
     email: email,
@@ -314,7 +314,7 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
 
   // Hash password and create new user object
   const hashedPassword = await bcrypt.hash(password, 10);
-  const path = "http://localhost:5000/image/";
+  const path = "http://localhost:5000/image/areas/";
   const userData = {
     name: name,
     email: email,
@@ -340,7 +340,7 @@ router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
       return res.status(400).json({ error: "Email already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const paths = "http://localhost:5000/image/";
+    const paths = "http://localhost:5000/image/areas/";
     const newAgency = {
       name,
       email,
@@ -402,7 +402,7 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
     if (!existingUser) {
       return res.status(404).json({ error: "User not found." });
     }
-    const paths = "http://localhost:5000/image/";
+    const paths = "http://localhost:5000/image/areas/";
     const userToUpdate = {
       name,
       about,
@@ -451,7 +451,7 @@ router.put("/admin/Update/:id", upload.single("images"), async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    const paths = "http://localhost:5000/image/";
+      const paths = "http://localhost:5000/image/areas/";
 
     const newAgency = {
       name,
