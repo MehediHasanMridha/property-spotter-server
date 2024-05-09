@@ -10,6 +10,7 @@ const { router } = require('./controllers/spotter-controler');
 const manageAreaRoute = require('./router/router');
 const manageAgentRoute = require('./router/router');
 const manageAgencyRoute = require('./router/router');
+const messageRoute = require('./router/router');
 
 // Middleware
 app.use(cors());
@@ -24,6 +25,7 @@ app.use("/spotter", spotterRegistration);
 app.use("/area", manageAreaRoute);
 app.use("/agency", manageAgencyRoute);
 app.use("/agent", manageAgentRoute);
+app.use("/message", messageRoute);
 app.use(router);
 
 const connectDB = async () => {
