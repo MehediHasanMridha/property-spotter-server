@@ -72,10 +72,36 @@ router.get("/allusers/filterby/spooter", async (req, res) => {
   }
 });
 
-router.get("/allusers/filterby/agent/:email", async (req, res) => {
+router.get("/allusers/filterby/agent/:name", async (req, res) => {
   try {
-    const email = req.params.email;
-    const users = await userCollection.find({ agencyBy: email }).toArray();
+    const name = req.params.name;
+    const users = await userCollection.find({ agencyName: name }).toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+router.get("/allusers/filterby/agent", async (req, res) => {
+  try {
+    const users = await userCollection.find({role: "agent"}).toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+router.get("/allusers/filterby/agency", async (req, res) => {
+  try {
+    const users = await userCollection.find({role: "agency"}).toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+router.get("/allusers/filterby/spotter", async (req, res) => {
+  try {
+    const users = await userCollection.find({role: "spotter"}).toArray();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
@@ -332,8 +358,7 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
 router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
   try {
     console.log("hit this route bro");
-    const { name, agencyName, email, password } = req.body;
-    console.log(agencyName, email, password);
+    const { name, email, password } = req.body;
 
     const existingAgency = await userCollection.findOne({ email: email });
     if (existingAgency) {
@@ -346,7 +371,6 @@ router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
     const newAgency = {
       name,
       email,
-      agencyName,
       password: hashedPassword,
       termsAndcondition: true,
       verification: false,
@@ -510,7 +534,7 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
 });
 router.put("/admin/Update/:id", upload.single("images"), async (req, res) => {
   try {
-    const { name, agencyName, email, password, oldPass, isUpdate } = req.body;
+    const { name, email, password, oldPass, isUpdate } = req.body;
     const id = req.params.id;
     const filename = req.file ? req.file.filename : undefined;
     const newPassword = password ? password : undefined;
@@ -528,7 +552,6 @@ router.put("/admin/Update/:id", upload.single("images"), async (req, res) => {
     const newAgency = {
       name,
       email,
-      agencyName,
     };
     if (isUpdate == "False" && newPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
