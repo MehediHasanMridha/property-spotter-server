@@ -9,10 +9,11 @@ const router = expres.Router();
 
 router.post('/add', upload.single('image'), async (req, res) => {
     try {
+        const path = "http://localhost:5000/image/";
         if (!req.file) {
             throw new Error("No file uploaded");
         }
-        const image = req.file.filename;
+        const image = path+req.file.filename;
         const savedHouse = await houseAdd(req.body, image);
         console.log(savedHouse);
         res.status(201).json(savedHouse);
