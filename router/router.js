@@ -1,10 +1,11 @@
 const expres = require('express');
 const { houseAdd, getHouse } = require('../controllers/houseControllers');
 const { registration } = require('../controllers/spotter-controler');
-const { addAreas, upload, getAreas,deleteArea } = require('../controllers/areasControllers');
-const { addAgency,getAgency,deleteAgency,updateAgencyData } = require('../controllers/agencyController');
+const { addAreas, upload, getAreas, deleteArea } = require('../controllers/areasControllers');
+const { addAgency, getAgency, deleteAgency, updateAgencyData } = require('../controllers/agencyController');
 const { addAgent, getAgent, deleteAgent, updateAgent } = require('../controllers/agentControllers');
 const House = require('../models/house');
+const { addMessage, getMessages } = require('../controllers/message_controllers');
 const router = expres.Router();
 
 router.post('/add', upload.single('image'), async (req, res) => {
@@ -13,7 +14,7 @@ router.post('/add', upload.single('image'), async (req, res) => {
         if (!req.file) {
             throw new Error("No file uploaded");
         }
-        const image = path+req.file.filename;
+        const image = path + req.file.filename;
         const savedHouse = await houseAdd(req.body, image);
         console.log(savedHouse);
         res.status(201).json(savedHouse);
@@ -59,5 +60,7 @@ router.delete('/deleteAgency/:id', deleteAgency);
 router.delete('/deleted/:id', deleteAgent);
 router.patch('/update/:id', updateAgent)
 router.patch('/:id', updateAgencyData)
-router.get('/houseData',getHouse)
+router.get('/houseData', getHouse)
+router.post('/send-message', addMessage)
+router.get('/get-message/:recieverId/:senderId', getMessages)
 module.exports = router;
