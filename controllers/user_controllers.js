@@ -56,7 +56,7 @@ router.get("/allusers", async (req, res) => {
 });
 router.get("/spotters", async (req, res) => {
   try {
-    const user = await userCollection.find({role: "spotter"}).toArray();
+    const user = await userCollection.find({ role: "spotter" }).toArray();
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
@@ -65,7 +65,7 @@ router.get("/spotters", async (req, res) => {
 
 router.get("/allusers/filterby/spooter", async (req, res) => {
   try {
-    const users = await userCollection.find({ role: "spooter" }).toArray();
+    const users = await userCollection.find({ role: "spotter" }).toArray();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
@@ -97,7 +97,7 @@ router.get("/singleuser/:email", async (req, res) => {
 //----------------------- POST -----------------//
 // Manual Signup
 router.post("/signup", upload.single("images"), async (req, res) => {
-  const { name, email, role, password, agencyBy } = req.body;
+  const { name, email, role, password, agencyBy, termsAndcondition } = req.body;
   console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
@@ -114,7 +114,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
         "An account with this email already exists. Please use a different email.",
     });
   }
-
+  const otp = Math.floor(100000 + Math.random() * 900000);
   // Hash password and create new user object
   const hashedPassword = await bcrypt.hash(password, 10);
   const path = "http://localhost:5000/image/areas/";
@@ -124,11 +124,42 @@ router.post("/signup", upload.single("images"), async (req, res) => {
     role: role,
     photoURL: path + filenames,
     password: hashedPassword,
+    termsAndcondition,
+    verification: false,
+    otp,
     about: "",
     location: "",
     agencyBy: agencyBy || "",
   };
 
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "algobot701@gmail.com",
+      pass: "jfth qddl nkgp yitb",
+    },
+  });
+
+  var mailOptions = {
+    from: '"Fred Foo 👻"',
+    to: email,
+    subject: "Email Verification",
+    text: "Confirmation email",
+    html: `
+        <b>Hello ${name}. Please confirm your otp.</b>
+        <b>Your confirmation code is</b>
+        <h1>${otp}</h1>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      return res.send({ Status: "Success" });
+    }
+  });
+  
   const insertedData = await userCollection.insertOne(userData);
   res.status(200).json({ message: "User created successfully", insertedData });
 });
@@ -147,6 +178,11 @@ router.post("/login", async (req, res) => {
     // Handle cases where no user is found or password is incorrect:
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    // Check if the user is verified:
+    if (!user.verification) {
+      return res.status(401).json({ error: "User not verified." });
     }
 
     const token = jwt.sign(user, process.env.JWT_SECRET, {
@@ -171,6 +207,8 @@ router.post("/signup/google", async (req, res) => {
       email: email,
       role: role,
       photoURL: photoURL,
+      termsAndcondition: true,
+      verification: true,
       password: "",
       about: "",
       location: "",
@@ -188,7 +226,7 @@ router.post("/signup/google", async (req, res) => {
 });
 // Manual spotter Signup
 router.post("/signup/spotter", upload.single("images"), async (req, res) => {
-  const { name, email, role, password } = req.body;
+  const { name, email, role, password,termsAndcondition } = req.body;
   console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
@@ -205,7 +243,7 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
         "An account with this email already exists. Please use a different email.",
     });
   }
-
+  const otp = Math.floor(100000 + Math.random() * 900000);
   // Hash password and create new user object
   const hashedPassword = await bcrypt.hash(password, 10);
   const path = "http://localhost:5000/image/areas/";
@@ -215,9 +253,40 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     role: role,
     photoURL: path + filenames,
     password: hashedPassword,
+    termsAndcondition,
+    verification: false,
+    otp,
     about: "",
     location: "",
   };
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "algobot701@gmail.com",
+      pass: "jfth qddl nkgp yitb",
+    },
+  });
+
+  var mailOptions = {
+    from: '"Fred Foo 👻"',
+    to: email,
+    subject: "Email Verification",
+    text: "Confirmation email",
+    html: `
+        <b>Hello ${name}. Please confirm your otp.</b>
+        <b>Your confirmation code is</b>
+        <h1>${otp}</h1>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      return res.send({ Status: "Success" });
+    }
+  });
 
   const insertedData = await userCollection.insertOne(userData);
   res.status(200).json({ message: "User created successfully", insertedData });
@@ -367,52 +436,48 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
-router.put(
-  "/admin/Update/:id",
-  upload.single("images"),
-  async (req, res) => {
-    try {
-      const { name, agencyName, email, password,oldPass, isUpdate } = req.body;
-      const id = req.params.id;
-      const filename = req.file ? req.file.filename : undefined;
-      const newPassword = password ? password : undefined;
+router.put("/admin/Update/:id", upload.single("images"), async (req, res) => {
+  try {
+    const { name, agencyName, email, password, oldPass, isUpdate } = req.body;
+    const id = req.params.id;
+    const filename = req.file ? req.file.filename : undefined;
+    const newPassword = password ? password : undefined;
 
-      const existingUser = await userCollection.findOne({
-        _id: new ObjectId(id),
-      });
+    const existingUser = await userCollection.findOne({
+      _id: new ObjectId(id),
+    });
 
-      if (!existingUser) {
-        return res.status(404).json({ error: "User not found." });
-      }
+    if (!existingUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
 
       const paths = "http://localhost:5000/image/areas/";
 
-      const newAgency = {
-        name,
-        email,
-        agencyName,
-      };
-      if (isUpdate == "False" && newPassword) {
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        newAgency.password = hashedPassword;
-      } else if (isUpdate == "True") {
-        newAgency.password = oldPass;
-      }
-
-      if (filename) newAgency.photoURL = paths + filename;
-      console.log(newAgency);
-      const result = await userCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: newAgency }
-      );
-
-      res.status(201).json(result);
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    const newAgency = {
+      name,
+      email,
+      agencyName,
+    };
+    if (isUpdate == "False" && newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      newAgency.password = hashedPassword;
+    } else if (isUpdate == "True") {
+      newAgency.password = oldPass;
     }
+
+    if (filename) newAgency.photoURL = paths + filename;
+    console.log(newAgency);
+    const result = await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: newAgency }
+    );
+
+    res.status(201).json(result);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-);
+});
 //---------------------------------------------//
 
 //----------------------- DELETE -----------------//
@@ -473,7 +538,7 @@ router.delete("/admin/delete/:email", async (req, res) => {
 });
 //------------------------------------------------//
 
-//----------------------- Password Reset -----------------//
+//----------------------- Password Reset + otp-----------------//
 // Password Reset
 router.post("/forgot-password/:email", async (req, res) => {
   const userEmail = req.params.email;
@@ -546,6 +611,26 @@ router.post("/reset-password/:id/:token", async (req, res) => {
   } catch (error) {
     console.error("Error occurred:", error);
     return res.status(500).send({ Status: "Error" });
+  }
+});
+// !------------OTP Verification----------
+router.post("/otp-verification", async (req, res) => {
+  try {
+    const { otp } = req.body;
+    const user = await userCollection.findOne({ otp });
+    if (!user) {
+      return res.status(401).json({ message: 'otp didn"t match' });
+    }
+    const result = await userCollection.updateOne(
+      { _id: user._id },
+      { $set: { verification: true } }
+    );
+    return res.status(200).json({
+      message: "successfully verify email. have a good day",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
   }
 });
 //-------------------------------------------------------//
