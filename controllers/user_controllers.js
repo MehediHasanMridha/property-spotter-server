@@ -97,7 +97,7 @@ router.get("/singleuser/:email", async (req, res) => {
 //----------------------- POST -----------------//
 // Manual Signup
 router.post("/signup", upload.single("images"), async (req, res) => {
-  const { name, email, role, password, agencyBy } = req.body;
+  const { name, email, role, password, agencyName } = req.body;
   console.log("🚀 ~ router.post ~ req.body:", req.body);
   const filenames = req.file.filename;
   const query = { email: email };
@@ -107,7 +107,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
   }
 
   const existingUserByEmail = await userCollection.findOne(query);
-
+  
   if (existingUserByEmail) {
     return res.status(400).json({
       error:
@@ -126,7 +126,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
     password: hashedPassword,
     about: "",
     location: "",
-    agencyBy: agencyBy || "",
+    agencyName: agencyName || "",
   };
 
   const insertedData = await userCollection.insertOne(userData);
