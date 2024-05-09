@@ -1,5 +1,6 @@
 const House = require("../models/house");
-
+const express = require('express');
+const router = express.Router();
 const houseAdd = async (houseData, image) => {
     try {
         const {
@@ -43,4 +44,6 @@ const getHouse = async (req, res) => {
     const result = await House.find();
     res.send(result);
 };
-module.exports = { houseAdd, getHouse };
+
+
+module.exports = { houseAdd, getHouse, router };
