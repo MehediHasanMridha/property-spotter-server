@@ -1,5 +1,5 @@
 const expres = require('express');
-const { houseAdd, getHouse } = require('../controllers/houseControllers');
+const { houseAdd, getHouse, getSpottedList, getSpottedListSuccess, getSpottedListUnsuccess, listingsByAgencyAgent, singleHouseDetails } = require('../controllers/houseControllers');
 const { registration } = require('../controllers/spotter-controler');
 const { addAreas, upload, getAreas, deleteArea } = require('../controllers/areasControllers');
 const { addAgency, getAgency, deleteAgency, updateAgencyData } = require('../controllers/agencyController');
@@ -61,6 +61,12 @@ router.delete('/deleted/:id', deleteAgent);
 router.patch('/update/:id', updateAgent)
 router.patch('/:id', updateAgencyData)
 router.get('/houseData', getHouse)
+router.get('/spotted-list/:email', getSpottedList)
+router.get('/spotted-list-success/:email', getSpottedListSuccess)
+router.get('/spotted-list-unsuccess/:email', getSpottedListUnsuccess)
+router.get('/spotted-list-paid/:email', getSpottedListUnsuccess)
+router.get('/listings-by-agency-agent/:name', listingsByAgencyAgent)
+router.get('/single-house-data/:id', singleHouseDetails)
 router.post('/send-message', addMessage)
 router.get('/get-message/:recieverId/:senderId', getMessages)
 module.exports = router;

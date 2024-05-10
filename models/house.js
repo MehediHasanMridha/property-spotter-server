@@ -26,6 +26,10 @@ const houseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String,
+        required: true
+    },
     image: {
         type: String,
        
@@ -53,6 +57,11 @@ const houseSchema = new mongoose.Schema({
     agency: {
         type: [String],
         required: true
+    },
+    createDate: {
+        type: String,
+        required: true,
+        default: new Date()
     }
 });
 
