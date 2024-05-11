@@ -85,29 +85,29 @@ const listingsByAgencyAgent = async (req, res) => {
 const singleHouseDetails = async (req, res) => {
     const id = req.params.id;
     const houseData = await House.findOne({ _id: id });
-    const agencyName = await houseData.agency[0];
+    // const agencyName = await houseData.agency[0];
 
-    const agencyDetails = await userCollection.findOne({ name: agencyName });
+    // const agencyDetails = await userCollection.findOne({ name: agencyName });
 
-    const result = {};
-    result.spooterName = houseData.spooterName;
-    result.spooterEmail = houseData.spooterEmail;
-    result.propertyType = houseData.propertyType;
-    result.status = houseData.status;
-    result.bedroom = houseData.bedroom;
-    result.address = houseData.address;
-    result.sellTime = houseData.sellTime;
-    result.image = houseData.image;
-    result.bathroom = houseData.bathroom;
-    result.houseOwnerName = houseData.houseOwnerName;
-    result.houseOwnerEmail = houseData.houseOwnerEmail;
-    result.houseOwnerPhone = houseData.houseOwnerPhone;
-    result.createAt = houseData.createDate;
-    result.agencyName = agencyDetails?.name || "Admin";
-    result.agencyEmail = agencyDetails?.email || "admin@gmail.com";
-    result.agencyImage = agencyDetails?.photoURL || undefined;
+    // const result = {};
+    // result.spooterName = houseData.spooterName;
+    // result.spooterEmail = houseData.spooterEmail;
+    // result.propertyType = houseData.propertyType;
+    // result.status = houseData.status;
+    // result.bedroom = houseData.bedroom;
+    // result.address = houseData.address;
+    // result.sellTime = houseData.sellTime;
+    // result.image = houseData.image;
+    // result.bathroom = houseData.bathroom;
+    // result.houseOwnerName = houseData.houseOwnerName;
+    // result.houseOwnerEmail = houseData.houseOwnerEmail;
+    // result.houseOwnerPhone = houseData.houseOwnerPhone;
+    // result.createAt = houseData.createDate;
+    // result.agencyName = agencyDetails?.name || "Admin";
+    // result.agencyEmail = agencyDetails?.email || "admin@gmail.com";
+    // result.agencyImage = agencyDetails?.photoURL || undefined;
 
-    res.send(result);
+    res.send(houseData);
 };
 
 module.exports = {
