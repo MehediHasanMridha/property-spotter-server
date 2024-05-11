@@ -47,6 +47,16 @@ const getHouse = async (req, res) => {
     const result = await House.find();
     res.send(result);
 };
+const getAvailableHouse = async (req, res) => {
+    const result = await House.find( {status: "available"});
+    res.send(result);
+};
+
+const getHouseListByAdmin = async (req, res) => {
+    const result = await House.find({ agency: { $in: ["admin"] } });
+    res.send(result);
+};
+
 const getSpottedList = async (req, res) => {
     const email = req.params.email;
     const result = await House.find({ spooterEmail: email });
@@ -74,27 +84,41 @@ const listingsByAgencyAgent = async (req, res) => {
 
 const singleHouseDetails = async (req, res) => {
     const id = req.params.id;
-    const houseData = await House.findById(id);
+    const houseData = await House.findOne({ _id: id });
     const agencyName = await houseData.agency[0];
 
     const agencyDetails = await userCollection.findOne({ name: agencyName });
-    
-    const result = houseData
-    result.agencyName = agencyDetails.name
-    result.agencyEmail = agencyDetails.email
-    result.agencyImage = agencyDetails.photoURL
-    
-    console.log(result);
+
+    const result = {};
+    result.spooterName = houseData.spooterName;
+    result.spooterEmail = houseData.spooterEmail;
+    result.propertyType = houseData.propertyType;
+    result.status = houseData.status;
+    result.bedroom = houseData.bedroom;
+    result.address = houseData.address;
+    result.sellTime = houseData.sellTime;
+    result.image = houseData.image;
+    result.bathroom = houseData.bathroom;
+    result.houseOwnerName = houseData.houseOwnerName;
+    result.houseOwnerEmail = houseData.houseOwnerEmail;
+    result.houseOwnerPhone = houseData.houseOwnerPhone;
+    result.createAt = houseData.createDate;
+    result.agencyName = agencyDetails?.name || "Admin";
+    result.agencyEmail = agencyDetails?.email || "admin@gmail.com";
+    result.agencyImage = agencyDetails?.photoURL || undefined;
+
     res.send(result);
 };
 
 module.exports = {
     houseAdd,
     getHouse,
+    getAvailableHouse,
     getSpottedList,
     getSpottedListSuccess,
     getSpottedListUnsuccess,
     singleHouseDetails,
     listingsByAgencyAgent,
+    getHouseListByAdmin,
     router,
 };
