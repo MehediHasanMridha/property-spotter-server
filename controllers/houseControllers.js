@@ -16,6 +16,7 @@ const houseAdd = async (houseData, image) => {
             houseOwnerName,
             houseOwnerEmail,
             houseOwnerPhone,
+            agent,
             agency,
             propertyType,
         } = houseData;
@@ -32,6 +33,7 @@ const houseAdd = async (houseData, image) => {
             houseOwnerName,
             houseOwnerEmail,
             houseOwnerPhone,
+            agent,
             agency,
             propertyType,
         });
