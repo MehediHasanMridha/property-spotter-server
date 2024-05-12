@@ -94,6 +94,21 @@ const singleHouseDetails = async (req, res) => {
     const houseData = await House.findOne({ _id: id });
     res.send(houseData);
 };
+const updateHouseDataByAgent = async (req, res) => {
+    try {
+        const id = req.params.id
+        const upData = req.body
+        const agencyName = req.body.agencyName
+        const agencyDetails = await userCollection.findOne({name: agencyName, role: "agency"})
+        upData.agencyEmail = agencyDetails.email
+        upData.agencyImage = agencyDetails.photoURL
+        const res = await House.findByIdAndUpdate(id, upData)
+        res.status(200).json(res);
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
 module.exports = {
     houseAdd,
@@ -102,6 +117,7 @@ module.exports = {
     getSpottedList,
     getSpottedListSuccess,
     getSpottedListUnsuccess,
+    updateHouseDataByAgent,
     singleHouseDetails,
     getHouseListByAgent,
     listingsByAgencyAgent,
