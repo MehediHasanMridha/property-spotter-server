@@ -50,12 +50,17 @@ const getHouse = async (req, res) => {
     res.send(result);
 };
 const getAvailableHouse = async (req, res) => {
-    const result = await House.find( {status: "available"});
+    const result = await House.find({ status: "available" });
     res.send(result);
 };
 
 const getHouseListByAdmin = async (req, res) => {
     const result = await House.find({ agency: { $in: ["admin"] } });
+    res.send(result);
+};
+const getHouseListByAgent = async (req, res) => {
+    const name = req.params.name;
+    const result = await House.find({ agent: name });
     res.send(result);
 };
 
@@ -87,30 +92,23 @@ const listingsByAgencyAgent = async (req, res) => {
 const singleHouseDetails = async (req, res) => {
     const id = req.params.id;
     const houseData = await House.findOne({ _id: id });
-    // const agencyName = await houseData.agency[0];
-
-    // const agencyDetails = await userCollection.findOne({ name: agencyName });
-
-    // const result = {};
-    // result.spooterName = houseData.spooterName;
-    // result.spooterEmail = houseData.spooterEmail;
-    // result.propertyType = houseData.propertyType;
-    // result.status = houseData.status;
-    // result.bedroom = houseData.bedroom;
-    // result.address = houseData.address;
-    // result.sellTime = houseData.sellTime;
-    // result.image = houseData.image;
-    // result.bathroom = houseData.bathroom;
-    // result.houseOwnerName = houseData.houseOwnerName;
-    // result.houseOwnerEmail = houseData.houseOwnerEmail;
-    // result.houseOwnerPhone = houseData.houseOwnerPhone;
-    // result.createAt = houseData.createDate;
-    // result.agencyName = agencyDetails?.name || "Admin";
-    // result.agencyEmail = agencyDetails?.email || "admin@gmail.com";
-    // result.agencyImage = agencyDetails?.photoURL || undefined;
-
     res.send(houseData);
 };
+const updateHouseDataByAgent = async (req, res) => {
+    try {
+        const id = req.params.id
+        const upData = req.body
+        const agencyName = req.body.agencyName
+        const agencyDetails = await userCollection.findOne({name: agencyName, role: "agency"})
+        upData.agencyEmail = agencyDetails.email
+        upData.agencyImage = agencyDetails.photoURL
+        const res = await House.findByIdAndUpdate(id, upData)
+        res.status(200).json(res);
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
 module.exports = {
     houseAdd,
@@ -119,7 +117,9 @@ module.exports = {
     getSpottedList,
     getSpottedListSuccess,
     getSpottedListUnsuccess,
+    updateHouseDataByAgent,
     singleHouseDetails,
+    getHouseListByAgent,
     listingsByAgencyAgent,
     getHouseListByAdmin,
     router,
