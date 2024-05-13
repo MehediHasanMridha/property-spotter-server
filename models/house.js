@@ -65,11 +65,9 @@ const houseSchema = new mongoose.Schema({
     },
     agent: {
         type: String,
-        required: true
     },
     agency: {
         type: [String],
-        required: true
     },
     createDate: {
         type: String,

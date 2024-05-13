@@ -11,6 +11,7 @@ const {
     getAvailableHouse,
     getHouseListByAgent,
     updateHouseDataByAgent,
+    getHouseDataByAgency,
 } = require("../controllers/houseControllers");
 const { registration } = require("../controllers/spotter-controler");
 const {
@@ -91,6 +92,7 @@ router.delete("/deleted/:id", deleteAgent);
 router.patch("/update/:id", updateAgent);
 router.patch("/:id", updateAgencyData);
 router.get("/houseData", getHouse);
+router.get("/getHouseDataByAgency/:name", getHouseDataByAgency);
 router.post("/updateHouseDataByAgent/:id", updateHouseDataByAgent);
 router.get("/houseAvailableData", getAvailableHouse);
 router.get("/houseDataByAdmin", getHouseListByAdmin);
