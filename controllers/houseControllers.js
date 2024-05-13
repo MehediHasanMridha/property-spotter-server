@@ -54,6 +54,13 @@ const getAvailableHouse = async (req, res) => {
     res.send(result);
 };
 
+const getHouseDataByAgency = async (req, res) => {
+    const name = req.params.name
+    console.log(name);
+    const result = await House.find({ agency: { $in: [name] } });
+    console.log(result);
+    res.send(result);
+};
 const getHouseListByAdmin = async (req, res) => {
     const result = await House.find({ agency: { $in: ["admin"] } });
     res.send(result);
@@ -103,6 +110,7 @@ const updateHouseDataByAgent = async (req, res) => {
         upData.agencyEmail = agencyDetails.email
         upData.agencyImage = agencyDetails.photoURL
         const res = await House.findByIdAndUpdate(id, upData)
+        console.log('agency update', res);
         res.status(200).json(res);
         
     } catch (error) {
@@ -119,6 +127,7 @@ module.exports = {
     getSpottedListUnsuccess,
     updateHouseDataByAgent,
     singleHouseDetails,
+    getHouseDataByAgency,
     getHouseListByAgent,
     listingsByAgencyAgent,
     getHouseListByAdmin,
