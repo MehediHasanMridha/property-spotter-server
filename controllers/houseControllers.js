@@ -4,39 +4,9 @@ const userCollection = require("../models/users");
 const router = express.Router();
 const houseAdd = async (houseData, image) => {
     try {
-        const {
-            spooterName,
-            spooterEmail,
-            status,
-            bedroom,
-            address,
-            bathroom,
-            sellTime,
-            description,
-            houseOwnerName,
-            houseOwnerEmail,
-            houseOwnerPhone,
-            agent,
-            agency,
-            propertyType,
-        } = houseData;
-        const newHouse = new House({
-            spooterName,
-            spooterEmail,
-            status,
-            bedroom,
-            address,
-            bathroom,
-            sellTime,
-            image,
-            description,
-            houseOwnerName,
-            houseOwnerEmail,
-            houseOwnerPhone,
-            agent,
-            agency,
-            propertyType,
-        });
+        const newData = houseData
+        newData.image = image
+        const newHouse = new House(newData);
         const savedHouse = await newHouse.save();
         return savedHouse;
     } catch (error) {

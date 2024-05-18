@@ -18,9 +18,14 @@ const houseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    room: {
+        type: String,
+    },
+    parking: {
+        type: Boolean,
+    },
     bedroom: {
         type: String,
-        required: true
     },
     address: {
         type: String,
@@ -36,7 +41,6 @@ const houseSchema = new mongoose.Schema({
     },
     bathroom: {
         type: String,
-        required: true
     },
     sellTime: {
         type: String,
