@@ -70,6 +70,12 @@ const houseSchema = new mongoose.Schema({
     agent: {
         type: String,
     },
+    agentEmail: {
+        type: String,
+    },
+    agentImage: {
+        type: String,
+    },
     agency: {
         type: [String],
     },
