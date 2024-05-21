@@ -9,6 +9,7 @@ const path = require("path");
 const UPLOAD_FOLDER = "./public/image/areas";
 var nodemailer = require("nodemailer");
 const { ObjectId } = require("mongodb");
+const crypto = require('crypto');
 
 //----------------------- Multer -----------------//
 const storage = multer.diskStorage({
@@ -280,12 +281,23 @@ router.post("/signup/google", async (req, res) => {
 // Manual spotter Signup
 router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     const { name, email, role, password, termsAndcondition } = req.body;
-    console.log("🚀 ~ router.post ~ req.body:", req.body);
     const filenames = req.file.filename;
     const query = { email: email };
 
     if (!name || !email || !password) {
         throw new Error("All fields are required");
+    }
+
+    async function generateRandomId() {
+        let randomId;
+        let idExists = true;
+    
+        while (idExists) {
+            randomId = crypto.randomInt(100000, 999999);
+            idExists = await userCollection.exists({ random_id: randomId });
+        }
+    
+        return randomId;
     }
 
     const existingUserByEmail = await userCollection.findOne(query);
@@ -299,6 +311,7 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     // Hash password and create new user object
     const hashedPassword = await bcrypt.hash(password, 10);
     const path = "http://localhost:5000/image/areas/";
+    const random_id = await generateRandomId();
     const userData = {
         name: name,
         email: email,
@@ -307,6 +320,7 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
         password: hashedPassword,
         termsAndcondition,
         verification: false,
+        random_id : random_id,
         otp,
         about: "",
         location: "",

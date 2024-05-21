@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 // Define schema
 const houseSchema = new mongoose.Schema({
+    random_id : {
+        type: Number,
+        unique: true
+    },
     spooterName: {
         type: String,
         required: true
@@ -84,6 +89,26 @@ const houseSchema = new mongoose.Schema({
         required: true,
         default: new Date()
     }
+});
+
+async function generateRandomId() {
+    let randomId;
+    let idExists = true;
+
+    while (idExists) {
+        randomId = crypto.randomInt(100000, 999999);
+        idExists = await mongoose.model('House').exists({ random_id: randomId });
+    }
+
+    return randomId;
+}
+
+
+houseSchema.pre('save', async function (next) {
+    if (this.isNew) {
+        this.random_id = await generateRandomId();
+    }
+    next();
 });
 
 // Create model
