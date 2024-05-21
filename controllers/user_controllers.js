@@ -532,7 +532,7 @@ router.post("/agent", async (req, res) => {
 router.put("/update/:email", upload.single("images"), async (req, res) => {
     try {
         const email = req.params.email;
-        const { name, password, about, role, location, oldPass, isUpdate } =
+        const { name, password, about, role, commissionAmount, location, oldPass, isUpdate } =
             req.body;
         // console.log("🚀 ~ app.put ~ oldPass:", req.body);
         const filename = req.file ? req.file.filename : undefined;
@@ -549,6 +549,9 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
             about,
             location,
         };
+        if (req.body.commissionAmount) {
+            userToUpdate.commissionAmount = req.body.commissionAmount
+        }
         if (isUpdate == "False" && newPassword) {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             userToUpdate.password = hashedPassword;
