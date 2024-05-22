@@ -2,12 +2,67 @@ const House = require("../models/house");
 const express = require("express");
 const userCollection = require("../models/users");
 const router = express.Router();
+require("dotenv").config();
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+    },
+});
+
 const houseAdd = async (houseData, image) => {
     try {
-        const newData = houseData
-        newData.image = image
+        const newData = houseData;
+        newData.image = image;
         const newHouse = new House(newData);
         const savedHouse = await newHouse.save();
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_ADMIN,
+            subject: `New House Added !`,
+            text: `A new house has been added to Property Spotter
+            Please review and take any necessary actions.
+            
+            Thank you,
+            The Property Spotter Team
+            `,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("Email sent: " + info.response);
+            }
+        });
+
+        if (newData.agent) {
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: newData.agentEmail,
+                subject: `A New House Assign to You !`,
+                text: `A new house has been Assign to You
+                Please review and take any necessary actions.
+                
+                Thank you,
+                The Property Spotter Team
+                `,
+            };
+    
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log("Email sent: " + info.response);
+                }
+            });
+        }
+
         return savedHouse;
     } catch (error) {
         console.error("Error adding house:", error.message);
@@ -25,7 +80,7 @@ const getAvailableHouse = async (req, res) => {
 };
 
 const getHouseDataByAgency = async (req, res) => {
-    const name = req.params.name
+    const name = req.params.name;
     console.log(name);
     const result = await House.find({ agency: { $in: [name] } });
     console.log(result);
@@ -73,20 +128,90 @@ const singleHouseDetails = async (req, res) => {
 };
 const updateHouseDataByAgent = async (req, res) => {
     try {
-        const id = req.params.id
-        const upData = req.body
-        const agencyName = req.body.agencyName
-        const agencyDetails = await userCollection.findOne({name: agencyName, role: "agency"})
-        upData.agencyEmail = agencyDetails.email
-        upData.agencyImage = agencyDetails.photoURL
-        const res = await House.findByIdAndUpdate(id, upData)
-        console.log('agency update', res);
+        const id = req.params.id;
+        const upData = req.body;
+        const agencyName = req.body.agencyName;
+        const agencyDetails = await userCollection.findOne({
+            name: agencyName,
+            role: "agency",
+        });
+        upData.agencyEmail = agencyDetails.email;
+        upData.agencyImage = agencyDetails.photoURL;
+        const res = await House.findByIdAndUpdate(id, upData);
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_ADMIN,
+            subject: `New House Updated !`,
+            text: `A house has been updated to Property Spotter
+            Please review and take any necessary actions.
+            
+            Thank you,
+            The Property Spotter Team
+            `,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("Email sent: " + info.response);
+            }
+        });
+
+        if (upData.agent) {
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: upData.agentEmail,
+                subject: `A New House Assign to You !`,
+                text: `A new house has been Assign to You
+                Please review and take any necessary actions.
+                
+                Thank you,
+                The Property Spotter Team
+                `,
+            };
+    
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log("Email sent: " + info.response);
+                }
+            });
+        }
+
+        if (upData.status === 'sold' || upData.status === 'approved') {
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: upData.agentEmail,
+                subject: `A New House Sold By You !`,
+                text: `A new house has been Sold By You
+                Please review and take any necessary actions.
+                
+                Thank you,
+                The Property Spotter Team
+                `,
+            };
+    
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log("Email sent: " + info.response);
+                }
+            });
+        }
+
+
+
         res.status(200).json(res);
-        
     } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: "Internal Server Error" });
     }
-}
+};
 
 module.exports = {
     houseAdd,

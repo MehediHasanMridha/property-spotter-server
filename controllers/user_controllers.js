@@ -9,7 +9,7 @@ const path = require("path");
 const UPLOAD_FOLDER = "./public/image/areas";
 var nodemailer = require("nodemailer");
 const { ObjectId } = require("mongodb");
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 //----------------------- Multer -----------------//
 const storage = multer.diskStorage({
@@ -181,7 +181,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
         agencyName: agencyName || "",
     };
 
-    var transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
             user: "algobot701@gmail.com",
@@ -189,7 +189,7 @@ router.post("/signup", upload.single("images"), async (req, res) => {
         },
     });
 
-    var mailOptions = {
+    const mailOptions = {
         from: '"Fred Foo 👻"',
         to: email,
         subject: "Email Verification",
@@ -206,6 +206,28 @@ router.post("/signup", upload.single("images"), async (req, res) => {
             console.log(error);
         } else {
             return res.send({ Status: "Success" });
+        }
+    });
+
+    const mailOptionsTwo = {
+        from: "no-reply@property-spotter.com",
+        to: "mohammad.98482@gmail.com",
+        subject: "New User Created on Property Spotter!",
+        text: `
+          A new user has been created on Property Spotter!
+      
+          Please review and take any necessary actions.
+      
+          Thank you,
+          The Property Spotter Team
+        `,
+    };
+
+    transporter.sendMail(mailOptionsTwo, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Email sent: " + info.response);
         }
     });
 
@@ -291,12 +313,12 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     async function generateRandomId() {
         let randomId;
         let idExists = true;
-    
+
         while (idExists) {
             randomId = crypto.randomInt(100000, 999999);
-            idExists = await userCollection.exists({ random_id: randomId });
+            idExists = await userCollection.findOne({ random_id: randomId });
         }
-    
+
         return randomId;
     }
 
@@ -320,22 +342,22 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
         password: hashedPassword,
         termsAndcondition,
         verification: false,
-        random_id : random_id,
+        random_id: random_id,
         otp,
         about: "",
         location: "",
     };
 
-    var transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: "algobot701@gmail.com",
-            pass: "jfth qddl nkgp yitb",
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
         },
     });
 
-    var mailOptions = {
-        from: '"Fred Foo 👻"',
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
         to: email,
         subject: "Email Verification",
         text: "Confirmation email",
@@ -351,6 +373,28 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
             console.log(error);
         } else {
             return res.send({ Status: "Success" });
+        }
+    });
+
+    const mailOptionsTwo = {
+        from: process.env.EMAIL_USER,
+        to: process.env.EMAIL_ADMIN,
+        subject: "New User Created on Property Spotter!",
+        text: `
+          A new user has been created on Property Spotter!
+      
+          Please review and take any necessary actions.
+      
+          Thank you,
+          The Property Spotter Team
+        `,
+    };
+
+    transporter.sendMail(mailOptionsTwo, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Email sent: " + info.response);
         }
     });
 
@@ -532,8 +576,16 @@ router.post("/agent", async (req, res) => {
 router.put("/update/:email", upload.single("images"), async (req, res) => {
     try {
         const email = req.params.email;
-        const { name, password, about, role, commissionAmount, location, oldPass, isUpdate } =
-            req.body;
+        const {
+            name,
+            password,
+            about,
+            role,
+            commissionAmount,
+            location,
+            oldPass,
+            isUpdate,
+        } = req.body;
         // console.log("🚀 ~ app.put ~ oldPass:", req.body);
         const filename = req.file ? req.file.filename : undefined;
         const newPassword = password ? password : undefined;
@@ -550,7 +602,7 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
             location,
         };
         if (req.body.commissionAmount) {
-            userToUpdate.commissionAmount = req.body.commissionAmount
+            userToUpdate.commissionAmount = req.body.commissionAmount;
         }
         if (isUpdate == "False" && newPassword) {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
