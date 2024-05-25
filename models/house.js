@@ -19,6 +19,10 @@ const houseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    commissionAmount: {
+        type: Number,
+        required: true
+    },
     status: {
         type: String,
         required: true

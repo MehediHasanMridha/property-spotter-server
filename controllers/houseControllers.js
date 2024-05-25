@@ -182,7 +182,7 @@ const updateHouseDataByAgent = async (req, res) => {
             });
         }
 
-        if (upData.status === 'sold' || upData.status === 'approved') {
+        if (upData.status === 'Sold, Spotter paid' || upData.status === 'approved') {
 
             const mailOptions = {
                 from: process.env.EMAIL_USER,

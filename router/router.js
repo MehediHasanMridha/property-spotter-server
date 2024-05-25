@@ -59,7 +59,7 @@ router.post("/update/:id", async (req, res) => {
     try {
         const id = req.params.id;
         const upData = req.body;
-        console.log(id);
+        console.log(upData);
         const res = await House.findByIdAndUpdate(id, upData);
         console.log(res);
         res.status(201).json(id);
