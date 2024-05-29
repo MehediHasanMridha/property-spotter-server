@@ -20,8 +20,7 @@ const houseSchema = new mongoose.Schema({
         required: true
     },
     commissionAmount: {
-        type: Number,
-        required: true
+        type: Number
     },
     status: {
         type: String,

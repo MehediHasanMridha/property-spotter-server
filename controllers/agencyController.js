@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
                     .join("-") +
                 "-" +
                 Date.now();
-            console.log("🚀 ~ fileName:", fileName);
             cb(null, fileName + fileExt);
         }
     },
@@ -31,9 +30,9 @@ const upload = multer({ storage: storage });
 
 const addAgency = async (req, res, next) => {
     try {
-        console.log('hit this route bro');
+
         const { agencyName, ownerEmail, password } = req.body;
-        console.log(agencyName, ownerEmail, password );
+
         const newAgency = new Agency({
             agencyName, 
             ownerEmail,
@@ -60,9 +59,9 @@ const getAgency =async(req, res, next)=>{
 const updateAgencyData = async (req, res, next) => {
     try {
         const { id } = req.params;
-        console.log(id);
+
         const { agencyName, ownerEmail, password } = req.body;
-        console.log(agencyName, ownerEmail, password,);
+
 
         const updateAgency = {};
         if (agencyName) updateAgency.agencyName = agencyName;
@@ -84,7 +83,6 @@ const updateAgencyData = async (req, res, next) => {
 const deleteAgency= async (req, res, next) => {
     try {
         const {id} = req.params;
-        // console.log(id);
 
         const deletedArea = await Agency.findByIdAndDelete(id);
         if (!deletedArea) {

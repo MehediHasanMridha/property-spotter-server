@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
                     .join("-") +
                 "-" +
                 Date.now();
-            console.log("🚀 ~ fileName:", fileName);
+
             cb(null, fileName + fileExt);
         }
     },
@@ -32,9 +32,9 @@ const upload = multer({ storage: storage });
 
 const addAgent = async (req, res, next) => {
     try {
-        console.log('hit this route bro');
+
         const { name, email, password,agency } = req.body;
-        console.log(name, email, password,agency );
+
         const newAgent = new Agent({
             name, 
             email, 

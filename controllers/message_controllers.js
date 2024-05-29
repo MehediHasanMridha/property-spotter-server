@@ -26,9 +26,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const addMessage = async (req, res) => {
-    console.log('his this route');
+
     const { recieverId, senderId, text } = req.body;
-    console.log(recieverId, senderId, req.file?.filename, text);
+
     const message = new MessageModel({
         senderId,
         recieverId,

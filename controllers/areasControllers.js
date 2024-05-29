@@ -20,7 +20,6 @@ const storage = multer.diskStorage({
                     .join("-") +
                 "-" +
                 Date.now();
-            console.log("🚀 ~ fileName:", fileName);
             cb(null, fileName + fileExt);
         }
     },
@@ -30,9 +29,7 @@ const upload = multer({ storage: storage });
 
 const addAreas = async (req, res, next) => {
     try {
-        console.log('hit this route bro');
         const { city, country } = req.body;
-        console.log( city, country);
         const newArea = new Area({
             city,
             country,
@@ -59,7 +56,6 @@ const getAreas =async(req, res, next)=>{
 const deleteArea = async (req, res, next) => {
     try {
         const {id} = req.params;
-        // console.log(id);
 
         const deletedArea = await Area.findByIdAndDelete(id);
         if (!deletedArea) {

@@ -27,7 +27,6 @@ const storage = multer.diskStorage({
                     .join("-") +
                 "-" +
                 Date.now();
-            console.log("🚀 ~ fileName:", fileName);
             cb(null, fileName + fileExt);
         }
     },
@@ -148,7 +147,7 @@ router.get("/singleuser/:email", async (req, res) => {
 router.post("/signup", upload.single("images"), async (req, res) => {
     const { name, email, role, password, agencyName, termsAndcondition } =
         req.body;
-    console.log("🚀 ~ router.post ~ req.body:", req.body);
+
     const filenames = req.file.filename;
     const query = { email: email };
 
@@ -408,7 +407,7 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
 // Manual houseowner Signup
 router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
     const { name, email, role, password } = req.body;
-    console.log("🚀 ~ router.post ~ req.body:", req.body);
+
     const filenames = req.file.filename;
     const query = { email: email };
 
@@ -446,7 +445,7 @@ router.post("/signup/houseowner", upload.single("images"), async (req, res) => {
 // Admin added Agency
 router.post("/agency/add-agency", upload.single("images"), async (req, res) => {
     try {
-        console.log("hit this route bro");
+
         const { name, email, password } = req.body;
 
         const existingAgency = await userCollection.findOne({ email: email });
@@ -586,7 +585,7 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
             oldPass,
             isUpdate,
         } = req.body;
-        // console.log("🚀 ~ app.put ~ oldPass:", req.body);
+
         const filename = req.file ? req.file.filename : undefined;
         const newPassword = password ? password : undefined;
 
@@ -613,7 +612,6 @@ router.put("/update/:email", upload.single("images"), async (req, res) => {
         // Update fields provided in the request body
         if (filename) userToUpdate.photoURL = paths + filename;
 
-        // console.log("testing", userToUpdate);
         // Update user data in the database
         const result = await userCollection.updateOne(
             { email },
@@ -661,7 +659,7 @@ router.put("/admin/Update/:id", upload.single("images"), async (req, res) => {
         }
 
         if (filename) newAgency.photoURL = paths + filename;
-        console.log(newAgency);
+
         const result = await userCollection.updateOne(
             { _id: new ObjectId(id) },
             { $set: newAgency }
@@ -741,7 +739,6 @@ router.delete("/admin/delete/:email", async (req, res) => {
 // Password Reset
 router.post("/forgot-password/:email", async (req, res) => {
     const userEmail = req.params.email;
-    console.log("🚀 ~ router.post ~ email:", userEmail);
 
     try {
         const user = await userCollection.findOne({ email: userEmail });
