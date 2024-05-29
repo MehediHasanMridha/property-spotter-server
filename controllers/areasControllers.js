@@ -2,6 +2,7 @@ const express = require('express');
 const Area = require("../models/area");
 const multer = require("multer");
 const path = require("path");
+const { Types } = require('mongoose');
 const UPLOAD_FOLDER = "./public/image/areas";
 
 //----------------------- Multer -----------------//
@@ -27,16 +28,43 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const addAreas = async (req, res, next) => {
+const addAreas = async (req, res) => {
     try {
-        const { city, country } = req.body;
-        const newArea = new Area({
-            city,
-            country,
-            image: req.file.filename,
-        });
+        const newArea = new Area(req.body);
+
         const savedArea = await newArea.save();
         res.status(201).json(savedArea);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+const addCity = async (req, res) => {
+    try {
+        const {provinces, city} = req.body
+        const response = await Area.findOneAndUpdate({provinces}, { $addToSet: { cities: city}}, {new: true})
+        res.status(201).json(response);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+const deleteProvince = async (req, res) => {
+    try {
+        const { id } = req.params
+        const response = await Area.findByIdAndDelete(id)
+        res.status(201).json(response);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+const deleteCity = async (req, res) => {
+    try {
+        const { id } = req.params
+        const city = req.query.city
+        const response = await Area.findByIdAndUpdate({_id: new Types.ObjectId(id)}, { $pull: { cities: city}}, {new: true})
+        res.status(201).json(response);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -69,4 +97,4 @@ const deleteArea = async (req, res, next) => {
 }
 
 
-module.exports = { addAreas, getAreas, deleteArea, upload }
+module.exports = { addAreas, getAreas, deleteArea, upload, addCity, deleteCity, deleteProvince}

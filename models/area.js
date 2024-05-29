@@ -1,20 +1,21 @@
 // models/Area.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const areaSchema = new mongoose.Schema({
-    city: {
-        type: String,
-        required: true
+const areaSchema = new mongoose.Schema(
+    {
+        cities: [String],
+        provinces: {
+            type: String,
+            required: true,
+            unique: true
+        },
     },
-    country: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String
+    {
+        versionKey: false,
+        timestamps: true,
     }
-});
+);
 
-const Area = mongoose.model('Area', areaSchema);
+const Area = mongoose.model("Area", areaSchema);
 
 module.exports = Area;

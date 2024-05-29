@@ -19,6 +19,9 @@ const {
     upload,
     getAreas,
     deleteArea,
+    addCity,
+    deleteCity,
+    deleteProvince,
 } = require("../controllers/areasControllers");
 const {
     addAgency,
@@ -79,6 +82,9 @@ router.post("/registration", async (req, res) => {
 });
 
 // ---------area router-----------
+router.post("/add-city", addCity);
+router.delete("/delete-city/:id", deleteCity);
+router.delete("/delete-province/:id", deleteProvince);
 router.post("/add-area", upload.single("image"), addAreas);
 router.post("/add-agency", upload.single("image"), addAgency);
 router.post("/add-agent", upload.single("image"), addAgent);
