@@ -12,6 +12,7 @@ const {
     getHouseListByAgent,
     updateHouseDataByAgent,
     getHouseDataByAgency,
+    getSpottedListPaid,
 } = require("../controllers/houseControllers");
 const { registration } = require("../controllers/spotter-controler");
 const {
@@ -105,7 +106,7 @@ router.get("/houseDataByAgent/:name", getHouseListByAgent);
 router.get("/spotted-list/:email", getSpottedList);
 router.get("/spotted-list-success/:email", getSpottedListSuccess);
 router.get("/spotted-list-unsuccess/:email", getSpottedListUnsuccess);
-router.get("/spotted-list-paid/:email", getSpottedListUnsuccess);
+router.get("/spotted-list-paid/:email", getSpottedListPaid);
 router.get("/listings-by-agency-agent/:name", listingsByAgencyAgent);
 router.get("/single-house-data/:id", singleHouseDetails);
 router.post("/send-message", addMessage);

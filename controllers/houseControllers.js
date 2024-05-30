@@ -41,7 +41,6 @@ const houseAdd = async (houseData, image) => {
         });
 
         if (newData.agent) {
-
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: newData.agentEmail,
@@ -53,7 +52,7 @@ const houseAdd = async (houseData, image) => {
                 The Property Spotter Team
                 `,
             };
-    
+
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
@@ -104,14 +103,21 @@ const getSpottedList = async (req, res) => {
 const getSpottedListSuccess = async (req, res) => {
     const email = req.params.email;
     const result = await House.find({
-        $and: [{ spooterEmail: email }, { status: "sold" }],
+        $and: [{ spooterEmail: email }, { status: "available" }],
     });
     res.send(result);
 };
 const getSpottedListUnsuccess = async (req, res) => {
     const email = req.params.email;
     const result = await House.find({
-        $and: [{ spooterEmail: email }, { status: "pending" }],
+        $and: [{ spooterEmail: email }, { status: "unsuccessful" }],
+    });
+    res.send(result);
+};
+const getSpottedListPaid = async (req, res) => {
+    const email = req.params.email;
+    const result = await House.find({
+        $and: [{ spooterEmail: email }, { status: "sold, spotter paid" }],
     });
     res.send(result);
 };
@@ -160,7 +166,6 @@ const updateHouseDataByAgent = async (req, res) => {
         });
 
         if (upData.agent) {
-
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: upData.agentEmail,
@@ -172,7 +177,7 @@ const updateHouseDataByAgent = async (req, res) => {
                 The Property Spotter Team
                 `,
             };
-    
+
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
@@ -182,8 +187,10 @@ const updateHouseDataByAgent = async (req, res) => {
             });
         }
 
-        if (upData.status === 'Sold, Spotter paid' || upData.status === 'approved') {
-
+        if (
+            upData.status === "sold, spotter paid" ||
+            upData.status === "approved"
+        ) {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: upData.agentEmail,
@@ -195,7 +202,7 @@ const updateHouseDataByAgent = async (req, res) => {
                 The Property Spotter Team
                 `,
             };
-    
+
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
@@ -204,8 +211,6 @@ const updateHouseDataByAgent = async (req, res) => {
                 }
             });
         }
-
-
 
         res.status(200).json(res);
     } catch (error) {
@@ -220,6 +225,7 @@ module.exports = {
     getSpottedList,
     getSpottedListSuccess,
     getSpottedListUnsuccess,
+    getSpottedListPaid,
     updateHouseDataByAgent,
     singleHouseDetails,
     getHouseDataByAgency,

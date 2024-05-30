@@ -32,6 +32,12 @@ const houseSchema = new mongoose.Schema({
     parking: {
         type: Boolean,
     },
+    city: {
+        type: String,
+    },
+    province: {
+        type: String,
+    },
     bedroom: {
         type: String,
     },
