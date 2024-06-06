@@ -32,6 +32,9 @@ const houseSchema = new mongoose.Schema({
     parking: {
         type: Boolean,
     },
+    suburb: {
+        type: String,
+    },
     city: {
         type: String,
     },
