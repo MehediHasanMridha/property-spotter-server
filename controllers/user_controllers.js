@@ -145,6 +145,9 @@ router.get("/singleuser/:email", async (req, res) => {
 //----------------------- POST -----------------//
 // Manual Signup
 router.post("/signup", upload.single("images"), async (req, res) => {
+
+    console.log('hit this signup route');
+
     const { name, email, role, password, agencyName, termsAndcondition } =
         req.body;
 
@@ -210,11 +213,13 @@ router.post("/signup", upload.single("images"), async (req, res) => {
 
     const mailOptionsTwo = {
         from: "no-reply@property-spotter.com",
-        to: "mohammad.98482@gmail.com",
-        subject: "New User Created on Property Spotter!",
+        //it's be chnage for this site owner or admin email
+        to: "shimulzahan636@gmail.com",
+        subject: `New ${role} has been registered on Property Spotter!`,
         text: `
-          A new user has been created on Property Spotter!
-      
+          A new ${role} has been registered on Property Spotter!
+          Name: ${name}
+          Email: ${email}
           Please review and take any necessary actions.
       
           Thank you,
@@ -288,6 +293,38 @@ router.post("/signup/google", async (req, res) => {
             about: "",
             location: "",
         };
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "algobot701@gmail.com",
+                pass: "jfth qddl nkgp yitb",
+            },
+        });
+
+        const mailOptionsTwo = {
+            from: "no-reply@property-spotter.com",
+            //it's be chnage for this site owner or admin email
+            to: "shimulzahan636@gmail.com",
+            subject: `New ${role} has been registered on Property Spotter!`,
+            text: `
+            A new ${role} has been registered on Property Spotter!
+            Name: ${name}
+            Email: ${email}
+            Please review and take any necessary actions.
+        
+            Thank you,
+            The Property Spotter Team
+        `,
+        };
+
+        transporter.sendMail(mailOptionsTwo, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("Email sent: " + info.response);
+            }
+        });
 
         const insertedData = await userCollection.insertOne(userData);
     }
@@ -378,10 +415,11 @@ router.post("/signup/spotter", upload.single("images"), async (req, res) => {
     const mailOptionsTwo = {
         from: process.env.EMAIL_USER,
         to: process.env.EMAIL_ADMIN,
-        subject: "New User Created on Property Spotter!",
+        subject: `New ${role} has been registered.`,
         text: `
-          A new user has been created on Property Spotter!
-      
+          A ${role} has been registered on Property Spotter!
+          Name:${name}
+          Email:${email}
           Please review and take any necessary actions.
       
           Thank you,

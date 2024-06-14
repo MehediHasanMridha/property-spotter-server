@@ -19,12 +19,21 @@ const houseAdd = async (houseData, image) => {
         newData.image = image;
         const newHouse = new House(newData);
         const savedHouse = await newHouse.save();
+        const { suburb, city, province, bedroom, bathroom, houseOwnerName, houseOwnerEmail, houseOwnerPhone, agentName, agentEmail } = houseData;
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: process.env.EMAIL_ADMIN,
             subject: `New House Added !`,
-            text: `A new house has been added to Property Spotter
+            text: `A new house has been added to Property Spotter.
+            Adress: ${suburb} ${province} ${city}
+            Bedrooms: ${bedroom}
+            Bathrooms: ${bathroom}
+            Owner Name: ${houseOwnerName}
+            Owner Email: ${houseOwnerEmail}
+            Owner Phone: ${houseOwnerPhone}
+            Assigned agent Name: ${agentName}
+            Assigned agent email: ${agentEmail}
             Please review and take any necessary actions.
             
             Thank you,
@@ -40,17 +49,23 @@ const houseAdd = async (houseData, image) => {
             }
         });
 
-        if (newData.agent) {
+        if (newData?.agentEmail) {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
-                to: newData.agentEmail,
+                to: agentEmail,
                 subject: `A New House Assign to You !`,
-                text: `A new house has been Assign to You
-                Please review and take any necessary actions.
+                text: `A new house has been Assign to You.
+                Adress: ${suburb} ${province} ${city}
+                Bedrooms: ${bedroom}
+                Bathrooms: ${bathroom}
+                Owner Name: ${houseOwnerName}
+                Owner Email: ${houseOwnerEmail}
+                Owner Phone: ${houseOwnerPhone}
+                Please review and take necessary actions.
                 
                 Thank you,
                 The Property Spotter Team
-                `,
+            `,
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
@@ -132,6 +147,7 @@ const singleHouseDetails = async (req, res) => {
     const houseData = await House.findOne({ _id: id });
     res.send(houseData);
 };
+
 const updateHouseDataByAgent = async (req, res) => {
     try {
         const id = req.params.id;
@@ -143,41 +159,20 @@ const updateHouseDataByAgent = async (req, res) => {
         });
         upData.agencyEmail = agencyDetails.email;
         upData.agencyImage = agencyDetails.photoURL;
-        const res = await House.findByIdAndUpdate(id, upData);
-
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_ADMIN,
-            subject: `New House Updated !`,
-            text: `A house has been updated to Property Spotter
-            Please review and take any necessary actions.
-            
-            Thank you,
-            The Property Spotter Team
-            `,
-        };
-
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log("Email sent: " + info.response);
-            }
-        });
-
-        if (upData.agent) {
+        const result = await House.findByIdAndUpdate(id, upData);
+        if (upData.oldStatus !== upData.status) {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
-                to: upData.agentEmail,
-                subject: `A New House Assign to You !`,
-                text: `A new house has been Assign to You
+                to: process.env.EMAIL_ADMIN,
+                subject: `Listing ${upData.random_id} status has been updated`,
+
+                text: `Listing ${upData.random_id} status has been changed from ${upData?.oldStatus} to ${upData?.status}
                 Please review and take any necessary actions.
                 
                 Thank you,
                 The Property Spotter Team
                 `,
             };
-
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
@@ -185,25 +180,40 @@ const updateHouseDataByAgent = async (req, res) => {
                     console.log("Email sent: " + info.response);
                 }
             });
-        }
 
-        if (
-            upData.status === "sold, spotter paid" ||
-            upData.status === "approved"
-        ) {
-            const mailOptions = {
+            const mailOptionsAgent = {
                 from: process.env.EMAIL_USER,
-                to: upData.agentEmail,
-                subject: `A New House Sold By You !`,
-                text: `A new house has been Sold By You
+                to: upData?.agentEmail,
+                subject: `Listing ${upData.random_id} status has been updated`,
+
+                text: `Listing ${upData.random_id} status has been changed from ${upData?.oldStatus} to ${upData?.status}
                 Please review and take any necessary actions.
                 
                 Thank you,
                 The Property Spotter Team
                 `,
             };
+            transporter.sendMail(mailOptionsAgent, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log("Email sent: " + info.response);
+                }
+            });
 
-            transporter.sendMail(mailOptions, function (error, info) {
+            const mailOptionsSpotters = {
+                from: process.env.EMAIL_USER,
+                to: upData?.spotterEmail,
+                subject: `Listing ${upData.random_id} status has been updated`,
+
+                text: `Listing ${upData.random_id} status has been changed from ${upData?.oldStatus} to ${upData?.status}
+                Please review and take any necessary actions.
+                
+                Thank you,
+                The Property Spotter Team
+                `,
+            };
+            transporter.sendMail(mailOptionsSpotters, function (error, info) {
                 if (error) {
                     console.log(error);
                 } else {
@@ -211,7 +221,6 @@ const updateHouseDataByAgent = async (req, res) => {
                 }
             });
         }
-
         res.status(200).json(res);
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });

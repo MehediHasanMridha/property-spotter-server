@@ -84,7 +84,7 @@ const houseSchema = new mongoose.Schema({
     agencyImage: {
         type: String,
     },
-    agent: {
+    agentName: {
         type: String,
     },
     agentEmail: {
